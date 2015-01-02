@@ -14,9 +14,12 @@ public:
     Queue();
     ~Queue();
 
-    void PushTask(TaskBase* task);
+    // could be used by threads
     TaskBase* PopTasks();
     bool IsEmpty() const;
+
+    // only used in main thread
+    void PushTask(TaskBase* task);
 
 private:
     std::list<TaskBase*> m_tasks;
