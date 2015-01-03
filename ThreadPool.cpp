@@ -46,7 +46,6 @@ TPool::TPool(unsigned int tNumber) throw(std::string)
 
 void TPool::Init() throw(std::string)
 {
-    pthread_t threadInfo;
     unsigned int curNumber = 0;
     while (curNumber++ < m_tNumber)
     {
@@ -57,6 +56,22 @@ void TPool::Init() throw(std::string)
             throw errorMsg;
         }
     }
-    pthread_join(threadInfo, NULL);
+    pthread_join(&m_threadInfo, NULL);
+}
+
+void TPool::Cancel()
+{
+    m_taskQueue.SetCancel(true);
+}
+
+void TPool::Resume()
+{
+    m_taskQueue.SetCancel(false);
+}
+
+void TPool::Stop()
+{
+    // FIXME: will it work?
+    pthread_cancel(m_threadInfo);
 }
 

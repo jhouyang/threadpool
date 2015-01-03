@@ -23,5 +23,7 @@ private:
 private:
     TasksQueue m_taskQueue;
     unsigned int m_tNumber;
+    bool m_bCancel : 1;
+    pthread_t m_threadInfo;
 };
 

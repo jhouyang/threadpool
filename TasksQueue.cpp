@@ -36,7 +36,9 @@ TaskBase* TasksQueue::PopTask()
     TaskBase* ptr = NULL;
     {
         MutexLockBlock mutex_(&TasksQueue::m_mutex);
-        while (m_tasks.empty())
+        // maybe we could use if here, 
+        // cause the mutex will make sure it be called only by one thread at a time
+        while (m_tasks.empty() || m_bCancel)
         {
             ++m_waitThreads;
             pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
@@ -57,5 +59,10 @@ bool TasksQueue::IsEmpty() const
         MutexLockBlock mutex_(&TasksQueue::m_mutex);
         return m_tasks.size() == 0;
     }
+}
+
+void TasksQueue::SetCancel(bCancel /*= true*/)
+{
+    m_bCancel = bCancel;
 }
 
