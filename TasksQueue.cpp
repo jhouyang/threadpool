@@ -7,6 +7,7 @@ pthread_cond_t TasksQueue::m_cond = PTHREAD_COND_INITIALIZER;
 
 TasksQueue::TasksQueue()
     : m_waitThreads(0)
+    , m_bCancel(false)
 {
 }
 
@@ -64,8 +65,15 @@ bool TasksQueue::IsEmpty() const
     }
 }
 
-void TasksQueue::SetCancel(bCancel /*= true*/)
+void TasksQueue::SetCancel(bool bCancel /*= true*/)
 {
+    if (m_bCancel == bCancel) return;
     m_bCancel = bCancel;
+
+    // resume
+    if (!m_bCancel)
+    {
+        pthread_cond_broadcast(&TasksQueue::m_cond);
+    }
 }
 
