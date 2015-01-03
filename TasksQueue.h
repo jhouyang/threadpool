@@ -24,7 +24,7 @@ public:
 
 private:
     std::list<TaskBase*> m_tasks;
-    bool m_bHasWaitTask : 1;
+    unsigned int m_waitThreads;
 
     static pthread_cond_t m_cond;
     static pthread_mutex_t m_mutex;

@@ -5,7 +5,7 @@ pthread_mutex_t TasksQueue::m_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t TasksQueue::m_cond = PTHREAD_COND_INITIALIZER;
 
 TasksQueue::TasksQueue()
-    : m_bHasWaitTask(false)
+    : m_waitThreads(0)
 {
 }
 
@@ -26,7 +26,7 @@ TasksQueue::~TasksQueue()
 void TasksQueue::PushTask(TaskBase* task)
 {
     m_tasks.push_back(task);
-    if (m_bHasWaitTask)
+    if (m_waitThreads > 0)
         pthread_cond_broadcast(&TasksQueue::m_cond);
 }
 
@@ -37,11 +37,15 @@ TaskBase* TasksQueue::PopTask()
         MutexLockBlock mutex_(&TasksQueue::m_mutex);
         while (m_tasks.empty())
         {
-            m_bHasWaitTask = true;
+            ++m_waitThreads;
             pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
         }
         ptr = m_tasks.front();
         m_tasks.pop_front();
+
+        // outside call PopTask to execute task, waitThreads--
+        assert(m_waitThreads > 0);
+        --m_waitThreads;
         return ptr;
     }
 }
