@@ -75,3 +75,13 @@ void TPool::Stop()
     pthread_cancel(m_threadInfo);
 }
 
+void TPool::SetWorkerNumber()
+{
+    // TODO: how to rebuild threadpool?
+}
+
+void TPool::AddTask(TaskBase* task)
+{
+    m_taskQueue.PushTask(task);
+}
+
