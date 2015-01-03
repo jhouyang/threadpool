@@ -1,5 +1,6 @@
 #include "TasksQueue.h"
 #include "Locks.h"
+#include "assert.h"
 
 pthread_mutex_t TasksQueue::m_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t TasksQueue::m_cond = PTHREAD_COND_INITIALIZER;
