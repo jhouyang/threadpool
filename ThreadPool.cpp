@@ -1,4 +1,5 @@
 #include "ThreadPool.h"
+#include <assert.h>
 
 namespace
 {
@@ -50,7 +51,11 @@ void TPool::Init() throw(std::string)
     while (curNumber++ < m_tNumber)
     {
         ::TaskExecutor exec(&m_taskQueue);
-        pthread_create(&threadInfo, NULL, ::_threadFunc< ::TaskExecutor >, &exec);
+        if (pthread_create(&threadInfo, NULL, ::_threadFunc< ::TaskExecutor >, &exec))
+        {
+            std::string errorMsg = "Failed to create thread";
+            throw errorMsg;
+        }
     }
     pthread_join(threadInfo, NULL);
 }
