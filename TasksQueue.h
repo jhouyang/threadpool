@@ -8,14 +8,14 @@ public:
     virtual bool IsTaskFinished() const = 0;
 };
 
-class Queue
+class TasksQueue
 {
 public:
-    Queue();
-    ~Queue();
+    TasksQueue();
+    ~TasksQueue();
 
     // could be used by threads
-    TaskBase* PopTasks();
+    TaskBase* PopTask();
     bool IsEmpty() const;
 
     // only used in main thread

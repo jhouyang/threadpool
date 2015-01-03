@@ -1,11 +1,11 @@
-#include "TasksQueue.h"
+#include "TasksTasksQueue.h"
 #include "Locks.h"
 
-Queue::Queue()
+TasksQueue::TasksQueue()
 {
 }
 
-Queue::~Queue()
+TasksQueue::~TasksQueue()
 {
     if (!m_tasks.empty())
     {
@@ -19,12 +19,12 @@ Queue::~Queue()
     }
 }
 
-void Queue::PushTask(TaskBase* task)
+void TasksQueue::PushTask(TaskBase* task)
 {
     m_tasks.push_back(task);
 }
 
-TaskBase* Queue::PopTasks()
+TaskBase* TasksQueue::PopTask()
 {
     TaskBase* ptr = NULL;
     {
@@ -39,7 +39,7 @@ TaskBase* Queue::PopTasks()
     }
 }
 
-bool Queue::IsEmpty() const
+bool TasksQueue::IsEmpty() const
 {
     {
         MutexLockBlock mutex_;
