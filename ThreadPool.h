@@ -6,6 +6,7 @@ class TPool
 {
 public:
     explicit TPool(unsigned int tNumber) throw(std::string);
+    ~TPool();
 
     void SetThreadNumber(unsigned int tNumber);
 

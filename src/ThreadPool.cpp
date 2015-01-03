@@ -44,6 +44,10 @@ TPool::TPool(unsigned int tNumber) throw(std::string)
 {
 }
 
+TPool::~TPool()
+{
+    Stop();
+}
 void TPool::Init() throw(std::string)
 {
     unsigned int curNumber = 0;
@@ -84,4 +88,5 @@ void TPool::AddTask(TaskBase* task)
 {
     m_taskQueue.PushTask(task);
 }
+
 
