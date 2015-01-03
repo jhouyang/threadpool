@@ -75,7 +75,7 @@ void TPool::Stop()
     pthread_cancel(m_threadInfo);
 }
 
-void TPool::SetWorkerNumber()
+void TPool::SetThreadNumber(unsigned int tNumber)
 {
     // TODO: how to rebuild threadpool?
 }
