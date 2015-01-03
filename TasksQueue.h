@@ -6,7 +6,7 @@ class TaskBase
 public:
     virtual ~TaskBase() { }
     virtual void Do() = 0;
-    virtual bool IsTaskFinished() const = 0;
+    // virtual bool IsTaskFinished() const = 0;
 };
 
 class TasksQueue
