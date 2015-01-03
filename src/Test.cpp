@@ -48,14 +48,27 @@ private:
 
 int main()
 {
+    /*
     TasksQueue tq;
     TaskExecutor exec(&tq);
     pthread_t tid;
+    pthread_create(&tid, NULL, _threadFunc<TaskExecutor>, &exec);
+    pthread_create(&tid, NULL, _threadFunc<TaskExecutor>, &exec);
+    pthread_create(&tid, NULL, _threadFunc<TaskExecutor>, &exec);
     pthread_create(&tid, NULL, _threadFunc<TaskExecutor>, &exec);
 
     sleep(1);
     pthread_t tid2 = pthread_self();
     printf("main tid %p\n", tid2);
+    tq.PushTask(new PrintTask());
+    sleep(2000);
+    */
+    TPool tp(4);
+    sleep(1);
+
+    tp.AddTask(new PrintTask());
+    tp.AddTask(new PrintTask());
+    tp.AddTask(new PrintTask());
     tp.AddTask(new PrintTask());
     sleep(2000);
     return 0;

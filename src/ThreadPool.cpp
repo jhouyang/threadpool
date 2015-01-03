@@ -9,6 +9,7 @@ namespace
     {
         ClassType* ptr = (ClassType*)param;
         ptr->Execute();
+        delete ptr;
         return NULL;
     }
 
@@ -27,12 +28,11 @@ namespace
             while (true)
             {
                 // thread may wait here for available task
+                pthread_t tid = pthread_self();
                 TaskBase* task = m_taskQueue->PopTask();
                 assert(task);
 
                 task->Do();
-                pthread_t tid = pthread_self();
-                printf("tid %p\n", tid);
                 delete task;
             }
         }
@@ -51,19 +51,20 @@ TPool::~TPool()
 {
     Stop();
 }
+
 void TPool::Init() throw(std::string)
 {
     unsigned int curNumber = 0;
     while (curNumber++ < m_tNumber)
     {
-        ::TaskExecutor exec(&m_taskQueue);
-        if (pthread_create(&m_threadInfo, NULL, ::_threadFunc< ::TaskExecutor >, &exec))
+        // will be deleted in _threadFunc
+        ::TaskExecutor *exec = new ::TaskExecutor(&m_taskQueue);
+        if (pthread_create(&m_threadInfo, NULL, ::_threadFunc< ::TaskExecutor >, exec))
         {
             std::string errorMsg = "Failed to create thread";
             throw errorMsg;
         }
     }
-    // pthread_join(m_threadInfo, NULL);
 }
 
 void TPool::Cancel()
