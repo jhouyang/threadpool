@@ -10,7 +10,7 @@ public:
     void SetThreadNumber(unsigned int tNumber);
 
     // flow control functions
-    void Start();
+    // void Start();
     void Cancel();
     void Stop();
     void Resume();
