@@ -19,7 +19,6 @@ public:
 
     // could be used by threads
     TaskBase* PopTask();
-    bool IsEmpty() const;
 
     // only used in main thread
     void PushTask(TaskBase* task);

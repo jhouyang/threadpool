@@ -30,44 +30,39 @@ void TasksQueue::PushTask(TaskBase* task)
     {
         MutexLockBlock mutex_(&TasksQueue::m_mutex);
         m_tasks.push_back(task);
+        printf("tasksize %d\n", m_tasks.size());
     }
-    printf("m_waitThreads number %d\n", m_waitThreads);
-    if (m_waitThreads > 0)
+    // if (m_waitThreads > 0)
     {
         printf("wakeup thread\n");
+        printf("tasksize %d\n", m_tasks.size());
+        printf("taskfront %p\n", m_tasks.front());
         pthread_cond_broadcast(&TasksQueue::m_cond);
     }
 }
 
 TaskBase* TasksQueue::PopTask()
 {
-    TaskBase* ptr = NULL;
+    MutexLockBlock mutex_(&TasksQueue::m_mutex);
+    // maybe we could use if here, 
+    // cause the mutex will make sure it be called only by one thread at a time
+    printf("wait\n");
+    while (m_tasks.empty() || m_bCancel)
     {
-        MutexLockBlock mutex_(&TasksQueue::m_mutex);
-        // maybe we could use if here, 
-        // cause the mutex will make sure it be called only by one thread at a time
-        while (m_tasks.empty() || m_bCancel)
-        {
-            ++m_waitThreads;
-            printf("I'm waiting %d\n", m_waitThreads);
-            pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
-        }
-        ptr = m_tasks.front();
-        m_tasks.pop_front();
-
-        // outside call PopTask to execute task, waitThreads--
-        assert(m_waitThreads > 0);
-        --m_waitThreads;
-        return ptr;
+        // ++m_waitThreads;
+        printf("empty\n");
+        pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
     }
-}
+    printf("PopTask tasksize %d\n", m_tasks.size());
 
-bool TasksQueue::IsEmpty() const
-{
-    {
-        MutexLockBlock mutex_(&TasksQueue::m_mutex);
-        return m_tasks.size() == 0;
-    }
+    TaskBase* ptr = m_tasks.front();
+    m_tasks.pop_front();
+
+    // outside call PopTask to execute task, waitThreads--
+    // assert(m_waitThreads > 0);
+    printf("Outside waitting \n");
+    // --m_waitThreads;
+    return ptr;
 }
 
 void TasksQueue::SetCancel(bool bCancel /*= true*/)
