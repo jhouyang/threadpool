@@ -26,7 +26,10 @@ TasksQueue::~TasksQueue()
 
 void TasksQueue::PushTask(TaskBase* task)
 {
-    m_tasks.push_back(task);
+    {
+        MutexLockBlock mutex_(&TasksQueue::m_mutex);
+        m_tasks.push_back(task);
+    }
     if (m_waitThreads > 0)
         pthread_cond_broadcast(&TasksQueue::m_cond);
 }
