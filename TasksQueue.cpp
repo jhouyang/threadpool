@@ -26,6 +26,8 @@ TasksQueue::~TasksQueue()
 void TasksQueue::PushTask(TaskBase* task)
 {
     m_tasks.push_back(task);
+    if (m_bHasWaitTask)
+        pthread_cond_broadcast(&TasksQueue::m_cond);
 }
 
 TaskBase* TasksQueue::PopTask()
