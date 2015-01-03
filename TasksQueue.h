@@ -1,4 +1,5 @@
 #include <list>
+#include <pthread.h>
 
 class TaskBase
 {
@@ -23,5 +24,9 @@ public:
 
 private:
     std::list<TaskBase*> m_tasks;
+    bool m_bHasWaitTask : 1;
+
+    static pthread_cond_t m_cond;
+    static pthread_mutex_t m_mutex;
 };
 

@@ -1,19 +1,17 @@
 #include <pthread.h>
 
-typedef pthread_mutex_t MutexType;
-#define MUTEX_INIT_VAL PTHREAD_MUTEX_INITIALIZER 
-
-MutexType taskQueueMutex = MUTEX_INIT_VAL;
-
 class MutexLockBlock
 {
 public:
-    MutexLockBlock()
+    MutexLockBlock(pthread_mutex_t* mutex)
+        : m_mutex(mutex)
     {
-        pthread_mutex_lock(&taskQueueMutex);
+        pthread_mutex_lock(m_mutex);
     }
     ~MutexLockBlock()
     {
-        pthread_mutex_unlock(&taskQueueMutex);
+        pthread_mutex_unlock(m_mutex);
     }
+private:
+    pthread_mutex_t* m_mutex;
 };

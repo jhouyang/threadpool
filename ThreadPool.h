@@ -1,9 +1,11 @@
 #include <pthread.h>
+#include <string>
+#include "TasksQueue.h"
 
 class TPool
 {
 public:
-    explicit TPool(unsigned int tNumber);
+    explicit TPool(unsigned int tNumber) throw(std::string);
 
     void SetThreadNumber(unsigned int tNumber);
 
@@ -13,8 +15,10 @@ public:
     void Stop();
     void Resume();
 
+    // tasks fun
+    void AddTask(TaskBase* task);
 private:
-    void Init();
+    void Init() throw(std::string);
 
 private:
     TasksQueue m_taskQueue;
