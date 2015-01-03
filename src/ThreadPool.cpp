@@ -28,7 +28,6 @@ namespace
             while (true)
             {
                 // thread may wait here for available task
-                pthread_t tid = pthread_self();
                 TaskBase* task = m_taskQueue->PopTask();
                 assert(task);
 
