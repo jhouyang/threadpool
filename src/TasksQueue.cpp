@@ -31,8 +31,12 @@ void TasksQueue::PushTask(TaskBase* task)
         MutexLockBlock mutex_(&TasksQueue::m_mutex);
         m_tasks.push_back(task);
     }
+    printf("m_waitThreads number %d\n", m_waitThreads);
     if (m_waitThreads > 0)
+    {
+        printf("wakeup thread\n");
         pthread_cond_broadcast(&TasksQueue::m_cond);
+    }
 }
 
 TaskBase* TasksQueue::PopTask()
@@ -45,6 +49,7 @@ TaskBase* TasksQueue::PopTask()
         while (m_tasks.empty() || m_bCancel)
         {
             ++m_waitThreads;
+            printf("I'm waiting %d\n", m_waitThreads);
             pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
         }
         ptr = m_tasks.front();

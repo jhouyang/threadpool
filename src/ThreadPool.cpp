@@ -31,6 +31,8 @@ namespace
                 assert(task);
 
                 task->Do();
+                pthread_t tid = pthread_self();
+                printf("tid %p\n", tid);
                 delete task;
             }
         }
@@ -42,6 +44,7 @@ namespace
 TPool::TPool(unsigned int tNumber) throw(std::string)
     : m_tNumber(tNumber)
 {
+    Init();
 }
 
 TPool::~TPool()
@@ -60,7 +63,7 @@ void TPool::Init() throw(std::string)
             throw errorMsg;
         }
     }
-    pthread_join(m_threadInfo, NULL);
+    // pthread_join(m_threadInfo, NULL);
 }
 
 void TPool::Cancel()
