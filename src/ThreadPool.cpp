@@ -78,8 +78,6 @@ void TPool::Resume()
 
 void TPool::Stop()
 {
-    // FIXME: will it work?
-    pthread_cancel(m_threadInfo);
 }
 
 void TPool::SetThreadNumber(unsigned int tNumber)

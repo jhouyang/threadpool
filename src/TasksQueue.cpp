@@ -41,22 +41,19 @@ TaskBase* TasksQueue::PopTask()
 {
     MutexLockBlock mutex_(&TasksQueue::m_mutex);
 
-    // maybe we could use if here, 
-    // cause the mutex will make sure it be called only by one thread at a time
-    // and pthread_cond_wait will try to lock the mutex before return
+    // we can't use if here, 
+    // cause broadcast may wakeup more than one waiting thread
+    ++m_waitThreads;
     while (m_tasks.empty() || m_bCancel)
     {
-        // FIXME : while block may have problem
-        ++m_waitThreads;
         pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
     }
+    --m_waitThreads;
 
     TaskBase* ptr = m_tasks.front();
     m_tasks.pop_front();
 
     // outside call PopTask to execute task, waitThreads--
-    assert(m_waitThreads > 0);
-    --m_waitThreads;
     return ptr;
 }
 
