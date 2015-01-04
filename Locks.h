@@ -7,8 +7,6 @@ public:
         : m_mutex(mutex)
     {
         pthread_mutex_lock(m_mutex);
-        pthread_t tid = pthread_self();
-        printf("Lock %p\n", tid);
     }
     ~MutexLockBlock()
     {

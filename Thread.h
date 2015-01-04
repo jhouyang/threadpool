@@ -5,10 +5,10 @@ class ThreadBase
 {
 public:
     ThreadBase(bool bDetached = false);
-    ~ThreadBase();
+    virtual ~ThreadBase();
 
-    Creat();
-    Start();
+    void Create();
+    void Start();
 
     bool IsDetached() const;
 

@@ -8,7 +8,7 @@ ThreadBase::ThreadBase(bool bDetached)
     , m_isDestroyed(false)
     , m_isPaused(false)
 {
-    m_mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_init(&m_mutex, NULL);
 
     // work just like pthread_cond_t
     sem_init(&m_semStart, 0, 0);
@@ -17,9 +17,10 @@ ThreadBase::ThreadBase(bool bDetached)
 
 ThreadBase::~ThreadBase()
 {
+    pthread_mutex_destroy(&m_mutex);
 }
 
-void ThreadBase::IsDetached() const
+bool ThreadBase::IsDetached() const
 {
     return m_isDetached;
 }
@@ -29,7 +30,7 @@ void ThreadBase::Create()
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     if (m_isDetached && 
-        0 != pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DEATCHED))
+        0 != pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED))
     {
         // FIXME : should add log system to info this assert
         assert(0);
