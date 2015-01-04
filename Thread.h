@@ -23,6 +23,9 @@ public:
     void StartWait();
     void SignalStart();
 
+    // this function is the entry point of thread
+    virtual void DoRun() = 0;
+
 private:
     sem_t m_semStart; // used to control start
     sem_t m_semPause; // used to control pause/resume
