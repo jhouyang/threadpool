@@ -27,6 +27,22 @@ bool ThreadBase::IsDetached() const
 
 void ThreadBase::Create()
 {
+    MutexLockBlock mutex_(m_mutex);
+    DoCreate_unlocked();
+}
+
+void ThreadBase::Start()
+{
+    MutexLockBlock mutex_(m_mutex);
+    if (!m_isStarted)
+    {
+        DoCreate_unlocked();
+    }
+    SignalStart();
+}
+
+void ThreadBase::DoCreate_unlocked()
+{
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     if (m_isDetached && 
@@ -47,14 +63,13 @@ void ThreadBase::Create()
     {
         // thread should be destroyed
         // FIXME : maybe should throw exception here to let outside code know about this
-        MutexLockBlock mutex_(m_mutex);
         m_isDestroyed = true;
     }
 
     m_isStarted = true;
 }
 
-void ThreadBase::StartWait()
+void ThreadBase::WaitStart()
 {
     sem_wait(&m_semStart);
 }
@@ -63,4 +78,46 @@ void ThreadBase::SignalStart()
 {
     sem_post(&m_semStart);
 }
+
+pthread_mutex_t* ThreadBase::GetMutex() const
+{
+    return *m_mutex;
+}
+
+void* ThreadBase::_threadFunc(void* data)
+{
+    ThreadBase* pthread = static_cast<ThreadBase*>(data);
+    if (!pthread) return;
+
+    // wait for start signal
+    pthread->WaitStart();
+
+    {
+        MutexLockBlock mutex_(pthread->GetMutex());
+        if (pthread->IsDestroyed())
+        {
+            // FIXME: testpoint: will it work ? test it;
+            delete pthread;
+        }
+    }
+    pthread->Entry();
+    {
+        MutexLockBlock mutex_(pthread->GetMutex());
+        pthread->SetDestroy();
+    }
+}
+
+/* TODO:
+    void SetDestroy();
+TODO : SetDestroy should wake up thread : two kinds of sem_wait
+    bool IsDestroyed() const;
+
+    // real thread main loop should call this function to really stop the thread
+    bool CheckDestroy() const;
+*/
+
+
+// TODO list
+// fix me : m_destroyed/ m_cancelled, two concept
+// use ThreadStat enum
 

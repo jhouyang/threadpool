@@ -20,22 +20,23 @@ public:
     // real thread main loop should call this function to really stop the thread
     bool CheckDestroy() const;
 
-    void StartWait();
+    void WaitStart();
     void SignalStart();
 
     // this function is the entry point of thread
-    virtual void DoRun() = 0;
+    virtual void Entry() = 0;
 
+    pthread_mutex_t* GetMutex() const;
 private:
+    void DoCreate_unlocked();
     sem_t m_semStart; // used to control start
     sem_t m_semPause; // used to control pause/resume
 
     bool m_isDetached : 1; // thread is detached
+
+    // states
     bool m_isStarted : 1; // if thread is started already
-
     bool m_isDestroyed : 1; // if thread is start to be destroyed
-
-    // FIXME: is there any other solution for it ?
     bool m_isPaused : 1; // this is used for pause/start for the single thread
 
     pthread_mutex_t m_mutex;
