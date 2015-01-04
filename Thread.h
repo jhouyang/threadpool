@@ -38,6 +38,6 @@ private:
     // FIXME: is there any other solution for it ?
     bool m_isPaused : 1; // this is used for pause/start for the single thread
 
-    pthread_mutex_t m_mutex;
+    // pthread_mutex_t m_mutex;
     pthread_t m_threadID;
 };
