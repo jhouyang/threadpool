@@ -47,6 +47,7 @@ void ThreadBase::Create()
     {
         // thread should be destroyed
         // FIXME : maybe should throw exception here to let outside code know about this
+        MutexLockBlock mutex_(m_mutex);
         m_isDestroyed = true;
     }
 
