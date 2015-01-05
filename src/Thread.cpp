@@ -82,10 +82,14 @@ void ThreadBase::WaitStart()
 
 void ThreadBase::SignalStart()
 {
-    MutexLockBlock mutex_(&m_mutex);
-    if (m_state == STAT_CREATED)
-        sem_post(&m_semStart);
-    m_state = STAT_RUNNING;
+    {
+        MutexLockBlock mutex_(&m_mutex);
+        if (m_state != STAT_CREATED)
+            return;
+
+        m_state = STAT_RUNNING;
+    }
+    sem_post(&m_semStart);
 }
 
 pthread_mutex_t* ThreadBase::GetMutex()
