@@ -31,8 +31,9 @@ public:
     bool IsDetached() const;
 
     static void* _threadFunc(void* data);
-
-    void SetDestroy();
+    
+    // Destroy current thread (kill it)
+    void Destroy();
     bool IsDestroyed() const;
 
     // real thread main loop should call this function to really stop the thread
