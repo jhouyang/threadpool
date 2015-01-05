@@ -77,3 +77,10 @@ private:
     // the new created threadID
     pthread_t m_threadID;
 };
+
+class DefaultThread : public ThreadBase
+{
+public:
+    DefaultThread(bool bDetached = false);
+    virtual void Entry();
+};
