@@ -124,6 +124,18 @@ void* ThreadBase::_threadFunc(void* data)
     return NULL;
 }
 
+void ThreadBase::SetState(ThreadState state)
+{
+    MutexLockBlock mutex_(&m_mutex);
+    m_state = state;
+}
+
+ThreadState ThreadBase::GetState() const
+{
+    MutexLockBlock mutex_(&m_mutex);
+    return m_state;
+}
+
 /* TODO:
     void SetDestroy();
 TODO : SetDestroy should wake up thread : two kinds of sem_wait
