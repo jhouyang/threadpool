@@ -4,7 +4,6 @@
 
 ThreadBase::ThreadBase(bool bDetached)
     : m_isDetached(bDetached)
-    , m_isStarted(false)
     , m_isDestroyed(false)
     , m_isPaused(false)
     , m_state(STAT_NEW)
@@ -35,7 +34,7 @@ void ThreadBase::Create()
 void ThreadBase::Start()
 {
     MutexLockBlock mutex_(&m_mutex);
-    if (!m_isStarted)
+    if (m_state == STAT_NEW)
     {
         DoCreate_unlocked();
     }
@@ -45,6 +44,11 @@ void ThreadBase::Start()
 
 void ThreadBase::DoCreate_unlocked()
 {
+    if (m_state != STAT_NEW)
+    {
+        return;
+    }
+
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     if (m_isDetached && 
@@ -68,7 +72,6 @@ void ThreadBase::DoCreate_unlocked()
         m_isDestroyed = true;
     }
 
-    m_isStarted = true;
     m_state = STAT_CREATED;
 }
 
