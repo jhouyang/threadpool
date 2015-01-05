@@ -136,17 +136,53 @@ ThreadState ThreadBase::GetState() const
     return m_state;
 }
 
+bool ThreadBase::IsDestroyed() const
+{
+    return m_isDestroyed;
+}
+
+void ThreadBase::Pause()
+{
+    // FIXME : maybe we need more locks
+    m_isPaused = true;
+}
+
+void ThreadBase::Resume()
+{
+    MutexLockBlock mutex_(&m_mutex);
+    m_isPaused = false;
+    if (m_state != STAT_PAUSE)
+    {
+        return;
+    }
+    sem_post(&m_semPause);
+    m_state = STAT_RUNNING;
+}
+
+bool ThreadBase::CheckDestroy() const
+{
+    {
+        MutexLockBlock mutex_(&m_mutex);
+        if (m_isPaused)
+        {
+            HungupThread();
+            m_state = STAT_PAUSE;
+            return;
+        }
+    }
+    
+    return m_isDestroyed;
+}
+
+void ThreadBase::HungupThread()
+{
+    sem_wait(&m_semPause);
+}
 /* TODO:
     void SetDestroy();
 TODO : SetDestroy should wake up thread : two kinds of sem_wait
-    bool IsDestroyed() const;
 
     // real thread main loop should call this function to really stop the thread
     bool CheckDestroy() const;
 */
-
-
-// TODO list
-// fix me : m_destroyed/ m_cancelled, two concept
-// use ThreadStat enum
 
