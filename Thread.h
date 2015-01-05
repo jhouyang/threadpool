@@ -1,7 +1,7 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-enum ThreadStats
+enum ThreadState
 {
     STAT_NEW,     // haven't call pthread_create
     STAT_CREATED, // already call pthread_create but wait for the Start() to wakeup
@@ -42,8 +42,15 @@ public:
     virtual void Entry() = 0;
 
     pthread_mutex_t* GetMutex() const;
+    
+    // state query
+    void SetState(ThreadState state);
+    ThreadState GetState() const;
 private:
     void DoCreate_unlocked();
+
+private:
+    ThreadState m_state;
     sem_t m_semStart; // used to control start
     sem_t m_semPause; // used to control pause/resume
 
