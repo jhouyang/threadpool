@@ -1,4 +1,7 @@
 #include <pthread.h>
+#include <unistd.h>
+
+#include <iostream>
 
 class MutexLockBlock
 {
@@ -15,3 +18,11 @@ public:
 private:
     pthread_mutex_t* m_mutex;
 };
+
+void printids(std::ostream& os)
+{
+    pid_t pid = getpid();
+    pthread_t tid = pthread_self();
+    
+    os << "process ID is " << pid << "\t" << "thread ID is " << tid << "\n";
+}
