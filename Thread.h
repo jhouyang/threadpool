@@ -46,8 +46,14 @@ public:
     // state query
     void SetState(ThreadState state);
     ThreadState GetState() const;
+    
+    // set Pause flag but won't really pause unless CheckDestroy is called
+    void Pause();
+    // resume from pause
+    void Resume();
 private:
     void DoCreate_unlocked();
+    void HungupThread(); // really pause
 
 private:
     ThreadState m_state;
