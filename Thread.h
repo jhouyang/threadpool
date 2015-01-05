@@ -56,8 +56,7 @@ private:
 
     bool m_isDetached : 1; // thread is detached
 
-    // states
-    bool m_isStarted : 1; // if thread is started already
+    // want states
     bool m_isDestroyed : 1; // if thread is start to be destroyed
     bool m_isPaused : 1; // this is used for pause/start for the single thread
 
