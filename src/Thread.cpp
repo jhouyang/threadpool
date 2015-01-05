@@ -1,5 +1,6 @@
 #include "thread.h"
 #include "Locks.h"
+#include "ThreadPool.h"
 #include <assert.h>
 
 /*****************************Start of ThreadBase********************************************/
@@ -14,6 +15,7 @@ ThreadBase::ThreadBase(bool bDetached)
     // work just like pthread_cond_t
     sem_init(&m_semStart, 0, 0);
     sem_init(&m_semPause, 0, 0);
+    DoCreate_unlocked();
 }
 
 ThreadBase::~ThreadBase()
@@ -26,21 +28,13 @@ bool ThreadBase::IsDetached() const
     return m_isDetached;
 }
 
-void ThreadBase::Create()
-{
-    MutexLockBlock mutex_(&m_mutex);
-    DoCreate_unlocked();
-}
-
 void ThreadBase::Start()
 {
-    MutexLockBlock mutex_(&m_mutex);
-    if (m_state == STAT_NEW)
-    {
-        DoCreate_unlocked();
-    }
     SignalStart();
-    m_state = STAT_RUNNING;
+    {
+        MutexLockBlock mutex_(&m_mutex);
+        m_state = STAT_RUNNING;
+    }
 }
 
 void ThreadBase::DoCreate_unlocked()
@@ -94,9 +88,9 @@ void ThreadBase::SignalStart()
     m_state = STAT_RUNNING;
 }
 
-pthread_mutex_t* ThreadBase::GetMutex() const
+pthread_mutex_t* ThreadBase::GetMutex()
 {
-    return *m_mutex;
+    return &m_mutex;
 }
 
 void* ThreadBase::_threadFunc(void* data)
@@ -132,7 +126,7 @@ void ThreadBase::SetState(ThreadState state)
     m_state = state;
 }
 
-ThreadState ThreadBase::GetState() const
+ThreadState ThreadBase::GetState()
 {
     MutexLockBlock mutex_(&m_mutex);
     return m_state;
@@ -161,7 +155,7 @@ void ThreadBase::Resume()
     m_state = STAT_RUNNING;
 }
 
-bool ThreadBase::CheckDestroy() const
+bool ThreadBase::CheckDestroy()
 {
     {
         MutexLockBlock mutex_(&m_mutex);
@@ -169,7 +163,6 @@ bool ThreadBase::CheckDestroy() const
         {
             HungupThread();
             m_state = STAT_PAUSE;
-            return;
         }
     }
     
@@ -213,8 +206,9 @@ void ThreadBase::Destroy()
 /*****************************End of ThreadBase********************************************/
 
 /*****************************Start of DefaultThread********************************************/
-DefaultThread::DefaultThread(bool isDetached)
+DefaultThread::DefaultThread(TPool* pool, bool isDetached)
     : ThreadBase(isDetached)
+    , m_pool(pool)
 {
 }
 
@@ -228,14 +222,10 @@ void DefaultThread::Entry()
         }
         
         // thread may wait here for available task
-        TaskBase* task = m_taskQueue->PopTask();
+        TaskBase* task = m_pool->GetTask();
         assert(task);
 
         task->Do();
-        if (CheckDestroy())
-        {
-            pthread_exit(0);
-        }
         delete task;
     }
 }

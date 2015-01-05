@@ -1,6 +1,10 @@
+#ifndef THREADPOOL_THREAD_H_
+#define THREADPOOL_THREAD_H_
+
 #include <semaphore.h>
 #include <pthread.h>
 
+class TPool;
 enum ThreadState
 {
     STAT_NEW,     // haven't call pthread_create
@@ -25,7 +29,6 @@ public:
     ThreadBase(bool bDetached = false);
     virtual ~ThreadBase();
 
-    void Create();
     void Start();
 
     bool IsDetached() const;
@@ -37,7 +40,7 @@ public:
     bool IsDestroyed() const;
 
     // real thread main loop should call this function to really stop the thread
-    bool CheckDestroy() const;
+    bool CheckDestroy();
 
     void WaitStart();
     void SignalStart();
@@ -45,11 +48,11 @@ public:
     // this function is the entry point of thread
     virtual void Entry() = 0;
 
-    pthread_mutex_t* GetMutex() const;
+    pthread_mutex_t* GetMutex();
     
     // state query
     void SetState(ThreadState state);
-    ThreadState GetState() const;
+    ThreadState GetState();
     
     // set Pause flag but won't really pause unless CheckDestroy is called
     void Pause();
@@ -81,6 +84,10 @@ private:
 class DefaultThread : public ThreadBase
 {
 public:
-    DefaultThread(bool bDetached = false);
+    DefaultThread(TPool* tpool, bool bDetached = false);
     virtual void Entry();
+private:
+    TPool* m_pool;
 };
+#endif  // THREADPOOL_THREAD_H_
+

@@ -1,4 +1,5 @@
 #include "ThreadPool.h"
+#include "Thread.h"
 #include <assert.h>
 
 namespace
@@ -56,6 +57,17 @@ void TPool::Init() throw(std::string)
     unsigned int curNumber = 0;
     while (curNumber++ < m_tNumber)
     {
+        ThreadBase* th = new DefaultThread(this, true);
+        m_workers.push_back(th);
+        th->Start();
+    }
+}
+/*
+void TPool::Init() throw(std::string)
+{
+    unsigned int curNumber = 0;
+    while (curNumber++ < m_tNumber)
+    {
         // will be deleted in _threadFunc
         ::TaskExecutor *exec = new ::TaskExecutor(&m_taskQueue);
         if (pthread_create(&m_threadInfo, NULL, ::_threadFunc< ::TaskExecutor >, exec))
@@ -65,6 +77,7 @@ void TPool::Init() throw(std::string)
         }
     }
 }
+*/
 
 void TPool::Cancel()
 {
@@ -88,6 +101,11 @@ void TPool::SetThreadNumber(unsigned int tNumber)
 void TPool::AddTask(TaskBase* task)
 {
     m_taskQueue.PushTask(task);
+}
+
+TaskBase* TPool::GetTask()
+{
+    return m_taskQueue.PopTask();
 }
 
 

@@ -1,3 +1,6 @@
+#ifndef THREADPOOL_TASKSQUEUE_H_
+#define THREADPOOL_TASKSQUEUE_H_
+
 #include <list>
 #include <pthread.h>
 
@@ -31,4 +34,6 @@ private:
     static pthread_cond_t m_cond;
     static pthread_mutex_t m_mutex;
 };
+
+#endif  // THREADPOOL_TASKSQUEUE_H_
 
