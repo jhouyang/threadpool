@@ -2,6 +2,7 @@
 #include "Locks.h"
 #include <assert.h>
 
+/*****************************Start of ThreadBase********************************************/
 ThreadBase::ThreadBase(bool bDetached)
     : m_isDetached(bDetached)
     , m_isDestroyed(false)
@@ -207,5 +208,34 @@ void ThreadBase::Destroy()
     if (!m_isDetached)
     {
         pthread_join(m_threadID, NULL);
+    }
+}
+/*****************************End of ThreadBase********************************************/
+
+/*****************************Start of DefaultThread********************************************/
+DefaultThread::DefaultThread(bool isDetached)
+    : ThreadBase(isDetached)
+{
+}
+
+void DefaultThread::Entry()
+{
+    while (true)
+    {
+        if (CheckDestroy())
+        {
+            pthread_exit(0);
+        }
+        
+        // thread may wait here for available task
+        TaskBase* task = m_taskQueue->PopTask();
+        assert(task);
+
+        task->Do();
+        if (CheckDestroy())
+        {
+            pthread_exit(0);
+        }
+        delete task;
     }
 }
