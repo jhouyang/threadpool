@@ -97,7 +97,7 @@ pthread_mutex_t* ThreadBase::GetMutex() const
 void* ThreadBase::_threadFunc(void* data)
 {
     ThreadBase* pthread = static_cast<ThreadBase*>(data);
-    if (!pthread) return;
+    if (!pthread) return (void*)-1;
 
     // wait for start signal, it can make sure the pthread_create function will get the right threadID
     pthread->WaitStart();
@@ -108,12 +108,17 @@ void* ThreadBase::_threadFunc(void* data)
         {
             // FIXME: testpoint: will it work ? test it;
             delete pthread;
+            
+            // return -1 means been cancelled
+            return (void*)-1;
         }
     }
     pthread->Entry();
 
     pthread->SetState(STAT_EXIT);
     pthread_exit(0);
+    
+    return NULL;
 }
 
 /* TODO:
