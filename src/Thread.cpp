@@ -7,6 +7,7 @@ ThreadBase::ThreadBase(bool bDetached)
     , m_isStarted(false)
     , m_isDestroyed(false)
     , m_isPaused(false)
+    , m_state(STAT_NEW)
 {
     pthread_mutex_init(&m_mutex, NULL);
 
@@ -27,18 +28,19 @@ bool ThreadBase::IsDetached() const
 
 void ThreadBase::Create()
 {
-    MutexLockBlock mutex_(m_mutex);
+    MutexLockBlock mutex_(&m_mutex);
     DoCreate_unlocked();
 }
 
 void ThreadBase::Start()
 {
-    MutexLockBlock mutex_(m_mutex);
+    MutexLockBlock mutex_(&m_mutex);
     if (!m_isStarted)
     {
         DoCreate_unlocked();
     }
     SignalStart();
+    m_state = STAT_RUNNING;
 }
 
 void ThreadBase::DoCreate_unlocked()
@@ -67,16 +69,24 @@ void ThreadBase::DoCreate_unlocked()
     }
 
     m_isStarted = true;
+    m_state = STAT_CREATED;
 }
 
 void ThreadBase::WaitStart()
 {
-    sem_wait(&m_semStart);
+    MutexLockBlock mutex_(&m_mutex);
+    if (m_state == STAT_NEW)
+    {
+        m_state = STAT_CREATED;
+        sem_wait(&m_semStart);
+    }
 }
 
 void ThreadBase::SignalStart()
 {
-    sem_post(&m_semStart);
+    MutexLockBlock mutex_(&m_mutex);
+    if (m_state == STAT_CREATED)
+        sem_post(&m_semStart);
 }
 
 pthread_mutex_t* ThreadBase::GetMutex() const
@@ -101,10 +111,9 @@ void* ThreadBase::_threadFunc(void* data)
         }
     }
     pthread->Entry();
-    {
-        MutexLockBlock mutex_(pthread->GetMutex());
-        pthread->SetDestroy();
-    }
+
+    pthread->SetState(STAT_EXIT);
+    pthread_exit(0);
 }
 
 /* TODO:
