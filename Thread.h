@@ -16,6 +16,9 @@ enum ThreadState
 // The flag should, m_isStoped / m_isPaused.
 // I need to reorder these pieces of code.
 
+// TODO : about mutex, currently I use one mutex to lock nearly all public interface.
+//        Maybe it's no need to lock some places, and even I have to, I can consider to use more than one mutex to lock
+
 class ThreadBase
 {
 public:
