@@ -89,7 +89,7 @@ void* ThreadBase::_threadFunc(void* data)
     ThreadBase* pthread = static_cast<ThreadBase*>(data);
     if (!pthread) return;
 
-    // wait for start signal
+    // wait for start signal, it can make sure the pthread_create function will get the right threadID
     pthread->WaitStart();
 
     {
