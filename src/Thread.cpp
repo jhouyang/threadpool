@@ -90,6 +90,7 @@ void ThreadBase::SignalStart()
     MutexLockBlock mutex_(&m_mutex);
     if (m_state == STAT_CREATED)
         sem_post(&m_semStart);
+    m_state = STAT_RUNNING;
 }
 
 pthread_mutex_t* ThreadBase::GetMutex() const
@@ -178,11 +179,33 @@ void ThreadBase::HungupThread()
 {
     sem_wait(&m_semPause);
 }
-/* TODO:
-    void SetDestroy();
-TODO : SetDestroy should wake up thread : two kinds of sem_wait
 
-    // real thread main loop should call this function to really stop the thread
-    bool CheckDestroy() const;
-*/
+void ThreadBase::Destroy()
+{
+    // step one, set flag
+    ThreadState state = STAT_NEW;
+    {
+        MutexLockBlock mutex_(&m_mutex);
+        state = m_state;
+        m_isDestroyed = true;
+    }
 
+    // step two : make it run
+    switch (state)
+    {
+        case STAT_CREATED:
+            SignalStart();
+        case STAT_PAUSE:
+            Resume();
+        default:
+            break;
+    }
+    
+    // step three : wait until the thread exit
+    // FIXME : how to deal with detached thread, currently I do nothing here.
+    // It seems there is no way to make sure if its delete or not ?
+    if (!m_isDetached)
+    {
+        pthread_join(m_threadID, NULL);
+    }
+}
