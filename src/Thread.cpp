@@ -6,7 +6,7 @@
 /*****************************Start of ThreadBase********************************************/
 ThreadBase::ThreadBase(bool bDetached)
     : m_isDetached(bDetached)
-    , m_isDestroyed(false)
+    , m_isCancelled(false)
     , m_isPaused(false)
     , m_state(STAT_NEW)
 {
@@ -64,7 +64,7 @@ void ThreadBase::DoCreate_unlocked()
     {
         // thread should be destroyed
         // FIXME : maybe should throw exception here to let outside code know about this
-        m_isDestroyed = true;
+        m_isCancelled = true;
     }
 
     m_state = STAT_CREATED;
@@ -107,7 +107,7 @@ void* ThreadBase::_threadFunc(void* data)
 
     {
         MutexLockBlock mutex_(pthread->GetMutex());
-        if (pthread->IsDestroyed())
+        if (pthread->IsCancelled())
         {
             // FIXME: testpoint: will it work ? test it; should we info outside code ?
             delete pthread;
@@ -136,9 +136,9 @@ ThreadState ThreadBase::GetState()
     return m_state;
 }
 
-bool ThreadBase::IsDestroyed() const
+bool ThreadBase::IsCancelled() const
 {
-    return m_isDestroyed;
+    return m_isCancelled;
 }
 
 void ThreadBase::Pause()
@@ -170,7 +170,7 @@ bool ThreadBase::CheckDestroy()
         }
     }
     
-    return m_isDestroyed;
+    return m_isCancelled;
 }
 
 void ThreadBase::HungupThread()
@@ -185,7 +185,7 @@ void ThreadBase::Cancel()
     {
         MutexLockBlock mutex_(&m_mutex);
         state = m_state;
-        m_isDestroyed = true;
+        m_isCancelled = true;
     }
 
     // step two : make it run
