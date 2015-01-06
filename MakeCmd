@@ -1,0 +1,2 @@
+clang++ Locks.cpp TasksQueue.cpp Thread.cpp ThreadPool.cpp -g -fPIC -shared -I.. -o libTPool.so
+clang++ Test.cpp -g -o test -L . -lTPool
