@@ -49,7 +49,7 @@ TPool::TPool(unsigned int tNumber) throw(std::string)
 
 TPool::~TPool()
 {
-    Stop();
+    Stop(false);
 }
 
 void TPool::Init() throw(std::string)
@@ -73,7 +73,7 @@ void TPool::Resume()
     m_taskQueue.SetCancel(false);
 }
 
-void TPool::Stop()
+void TPool::Stop(bool bForce)
 {
     std::list<ThreadBase*>::iterator it;
     for (it = m_workers.begin(); it != m_workers.end(); )
@@ -99,5 +99,4 @@ TaskBase* TPool::GetTask()
 {
     return m_taskQueue.PopTask();
 }
-
 

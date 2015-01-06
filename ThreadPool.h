@@ -17,8 +17,9 @@ public:
     void SetThreadNumber(unsigned int tNumber);
 
     // flow control functions
-    // void Start();
-    void Stop();
+    // set bForce = false will just stop accept new tasks but will execute all tasks in TasksQueue
+    // set bForce = true; won't accept any new tasks
+    void Stop(bool bForce = true);
     void Pause();
     void Resume();
 
