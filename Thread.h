@@ -62,8 +62,13 @@ private:
     void DoCreate_unlocked();
     void HungupThread(); // really pause
 
-private:
+protected:
     ThreadState m_state;
+    // this lock is for m_state and thread start/create 
+    // FIXME : maybe it's no need to add mutex to protect start/create ? Not sure, need verify.
+    pthread_mutex_t m_mutex;
+
+private:
     sem_t m_semStart; // used to control start
     sem_t m_semPause; // used to control pause/resume
 
@@ -73,10 +78,6 @@ private:
     bool m_isCancelled : 1; // if thread is start to be destroyed
     bool m_isPaused : 1; // this is used for pause/start for the single thread
 
-    // this lock is for m_state and thread start/create 
-    // FIXME : maybe it's no need to add mutex to protect start/create ? Not sure, need verify.
-    pthread_mutex_t m_mutex;
-    
     // the new created threadID
     pthread_t m_threadID;
 };
