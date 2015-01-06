@@ -31,8 +31,8 @@ private:
     unsigned int m_waitThreads;
     bool m_bCancel : 1;
 
-    static pthread_cond_t m_cond;
-    static pthread_mutex_t m_mutex;
+    pthread_cond_t m_getTasksCond;
+    pthread_mutex_t m_mutex;
 };
 
 #endif  // THREADPOOL_TASKSQUEUE_H_

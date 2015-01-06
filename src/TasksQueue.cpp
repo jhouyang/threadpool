@@ -2,17 +2,18 @@
 #include "Locks.h"
 #include "assert.h"
 
-pthread_mutex_t TasksQueue::m_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t TasksQueue::m_cond = PTHREAD_COND_INITIALIZER;
-
 TasksQueue::TasksQueue()
     : m_waitThreads(0)
     , m_bCancel(false)
 {
+    pthread_mutex_init(&m_mutex, NULL);
+    pthread_cond_init(&m_getTasksCond, NULL);
 }
 
 TasksQueue::~TasksQueue()
 {
+    pthread_mutex_destroy(&m_mutex);
+    pthread_cond_destroy(&m_getTasksCond);
     if (!m_tasks.empty())
     {
         std::list<TaskBase*>::iterator it = m_tasks.begin();
@@ -28,25 +29,25 @@ TasksQueue::~TasksQueue()
 void TasksQueue::PushTask(TaskBase* task)
 {
     {
-        MutexLockBlock mutex_(&TasksQueue::m_mutex);
+        MutexLockBlock mutex_(&m_mutex);
         m_tasks.push_back(task);
     }
     if (m_waitThreads > 0)
     {
-        pthread_cond_broadcast(&TasksQueue::m_cond);
+        pthread_cond_broadcast(&m_getTasksCond);
     }
 }
 
 TaskBase* TasksQueue::PopTask()
 {
-    MutexLockBlock mutex_(&TasksQueue::m_mutex);
+    MutexLockBlock mutex_(&m_mutex);
 
     // we can't use if here, 
     // cause broadcast may wakeup more than one waiting thread
     ++m_waitThreads;
     while (m_tasks.empty() || m_bCancel)
     {
-        pthread_cond_wait(&TasksQueue::m_cond, &TasksQueue::m_mutex);
+        pthread_cond_wait(&m_getTasksCond, &m_mutex);
     }
     --m_waitThreads;
 
@@ -65,7 +66,7 @@ void TasksQueue::SetCancel(bool bCancel /*= true*/)
     // resume
     if (!m_bCancel)
     {
-        pthread_cond_broadcast(&TasksQueue::m_cond);
+        pthread_cond_broadcast(&m_getTasksCond);
     }
 }
 
