@@ -109,7 +109,7 @@ void* ThreadBase::_threadFunc(void* data)
         MutexLockBlock mutex_(pthread->GetMutex());
         if (pthread->IsDestroyed())
         {
-            // FIXME: testpoint: will it work ? test it;
+            // FIXME: testpoint: will it work ? test it; should we info outside code ?
             delete pthread;
             
             // return -1 means been cancelled
@@ -178,7 +178,7 @@ void ThreadBase::HungupThread()
     sem_wait(&m_semPause);
 }
 
-void ThreadBase::Destroy()
+void ThreadBase::Cancel()
 {
     // step one, set flag
     ThreadState state = STAT_NEW;
@@ -195,6 +195,8 @@ void ThreadBase::Destroy()
             SignalStart();
         case STAT_PAUSE:
             Resume();
+        case STAT_EXIT:
+            return;
         default:
             break;
     }
@@ -222,7 +224,12 @@ void DefaultThread::Entry()
     {
         if (CheckDestroy())
         {
+            {
+                MutexLockBlock mutex_(&m_mutex);
+                m_state = STAT_EXIT;
+            }
             pthread_exit(0);
+            return;
         }
         
         // thread may wait here for available task
