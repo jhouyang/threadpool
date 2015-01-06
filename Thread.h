@@ -35,9 +35,9 @@ public:
 
     static void* _threadFunc(void* data);
     
-    // Destroy current thread (kill it)
-    void Destroy();
-    bool IsDestroyed() const;
+    // Cancel current thread async
+    void Cancel();
+    bool IsCancelled() const;
 
     // real thread main loop should call this function to really stop the thread
     bool CheckDestroy();
@@ -70,7 +70,7 @@ private:
     bool m_isDetached : 1; // thread is detached
 
     // want states
-    bool m_isDestroyed : 1; // if thread is start to be destroyed
+    bool m_isCancelled : 1; // if thread is start to be destroyed
     bool m_isPaused : 1; // this is used for pause/start for the single thread
 
     // this lock is for m_state and thread start/create 
