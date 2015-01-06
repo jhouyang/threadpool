@@ -60,13 +60,13 @@ TaskBase* TasksQueue::PopTask()
 
 void TasksQueue::SetCancel(bool bCancel /*= true*/)
 {
-    if (m_bCancel == bCancel) return;
-    m_bCancel = bCancel;
-
-    // resume
-    if (!m_bCancel)
     {
-        pthread_cond_broadcast(&m_getTasksCond);
+        MutexLockBlock mutex_(&m_mutex);
+        if (m_bCancel == bCancel) return;
+        m_bCancel = bCancel;
+        if (m_bCancel) return;
     }
+
+    pthread_cond_broadcast(&m_getTasksCond);
 }
 
