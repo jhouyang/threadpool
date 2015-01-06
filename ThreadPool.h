@@ -18,8 +18,8 @@ public:
 
     // flow control functions
     // void Start();
-    void Cancel();
     void Stop();
+    void Pause();
     void Resume();
 
     // tasks fun

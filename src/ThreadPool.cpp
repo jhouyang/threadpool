@@ -62,6 +62,7 @@ void TPool::Init() throw(std::string)
         th->Start();
     }
 }
+
 /*
 void TPool::Init() throw(std::string)
 {
@@ -79,7 +80,7 @@ void TPool::Init() throw(std::string)
 }
 */
 
-void TPool::Cancel()
+void TPool::Pause()
 {
     m_taskQueue.SetCancel(true);
 }
