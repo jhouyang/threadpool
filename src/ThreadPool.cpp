@@ -63,23 +63,6 @@ void TPool::Init() throw(std::string)
     }
 }
 
-/*
-void TPool::Init() throw(std::string)
-{
-    unsigned int curNumber = 0;
-    while (curNumber++ < m_tNumber)
-    {
-        // will be deleted in _threadFunc
-        ::TaskExecutor *exec = new ::TaskExecutor(&m_taskQueue);
-        if (pthread_create(&m_threadInfo, NULL, ::_threadFunc< ::TaskExecutor >, exec))
-        {
-            std::string errorMsg = "Failed to create thread";
-            throw errorMsg;
-        }
-    }
-}
-*/
-
 void TPool::Pause()
 {
     m_taskQueue.SetCancel(true);
