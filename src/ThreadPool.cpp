@@ -75,6 +75,14 @@ void TPool::Resume()
 
 void TPool::Stop()
 {
+    std::list<ThreadBase*>::iterator it;
+    for (it = m_workers.begin(); it != m_workers.end(); )
+    {
+        ThreadBase* ptr = *it;
+        ptr->Cancel();
+        it = m_workers.erase(it);
+        delete ptr;
+    }
 }
 
 void TPool::SetThreadNumber(unsigned int tNumber)
