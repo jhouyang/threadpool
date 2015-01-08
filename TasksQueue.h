@@ -44,7 +44,7 @@ public:
     // Cancel and wait until the task is really been cancelled
     void CancelWait();
     
-    CancellableTaskState GetState() const;
+    CancellableTaskState GetState();
 private:
     // implement the DoRun interface and add something you want to execute here
     virtual void DoRun() = 0;
@@ -63,17 +63,17 @@ private:
     pthread_mutex_t m_cancelMutex;
 };
 
-typedef boost::function< int (TaskBase*, TasksBase*) > SortFunc;
+typedef boost::function< int (TaskBase*, TaskBase*) > SortFunc;
 class TasksQueueBase
 {
 public:
-    virtual ~TasksQueue() {}
+    virtual ~TasksQueueBase() {}
     
     // should delete the TaskBase to avoid memory leak by the user ocde
     virtual TaskBase* PopTask() = 0;
     
     // TasksQueueBase will own it lifetime
-    void PushTask(TaskBase* task) = 0;
+    virtual void PushTask(TaskBase* task) = 0;
     
     // sort tasks
     // no need to support Sort function for all tasksQueue

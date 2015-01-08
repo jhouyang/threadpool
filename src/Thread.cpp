@@ -32,8 +32,8 @@ void ThreadBase::Start()
 {
     SignalStart();
     {
-        MutexLockBlock mutex_(&m_mutex);
-        m_state = STAT_RUNNING;
+        MutexLockBlock mutex_(m_mutex);
+        m_state = STAT_TRUNNING;
     }
 }
 
@@ -72,7 +72,7 @@ void ThreadBase::DoCreate_unlocked()
 
 void ThreadBase::WaitStart()
 {
-    MutexLockBlock mutex_(&m_mutex);
+    MutexLockBlock mutex_(m_mutex);
     if (m_state == STAT_NEW)
     {
         m_state = STAT_CREATED;
@@ -83,18 +83,18 @@ void ThreadBase::WaitStart()
 void ThreadBase::SignalStart()
 {
     {
-        MutexLockBlock mutex_(&m_mutex);
+        MutexLockBlock mutex_(m_mutex);
         if (m_state != STAT_CREATED)
             return;
 
-        m_state = STAT_RUNNING;
+        m_state = STAT_TRUNNING;
     }
     sem_post(&m_semStart);
 }
 
-pthread_mutex_t* ThreadBase::GetMutex()
+pthread_mutex_t& ThreadBase::GetMutex()
 {
-    return &m_mutex;
+    return m_mutex;
 }
 
 void* ThreadBase::_threadFunc(void* data)
@@ -126,13 +126,13 @@ void* ThreadBase::_threadFunc(void* data)
 
 void ThreadBase::SetState(ThreadState state)
 {
-    MutexLockBlock mutex_(&m_mutex);
+    MutexLockBlock mutex_(m_mutex);
     m_state = state;
 }
 
 ThreadState ThreadBase::GetState()
 {
-    MutexLockBlock mutex_(&m_mutex);
+    MutexLockBlock mutex_(m_mutex);
     return m_state;
 }
 
@@ -149,20 +149,20 @@ void ThreadBase::Pause()
 
 void ThreadBase::Resume()
 {
-    MutexLockBlock mutex_(&m_mutex);
+    MutexLockBlock mutex_(m_mutex);
     m_isPaused = false;
     if (m_state != STAT_PAUSE)
     {
         return;
     }
     sem_post(&m_semPause);
-    m_state = STAT_RUNNING;
+    m_state = STAT_TRUNNING;
 }
 
 bool ThreadBase::CheckDestroy()
 {
     {
-        MutexLockBlock mutex_(&m_mutex);
+        MutexLockBlock mutex_(m_mutex);
         if (m_isPaused)
         {
             HungupThread();
@@ -183,7 +183,7 @@ void ThreadBase::Cancel()
     // step one, set flag
     ThreadState state = STAT_NEW;
     {
-        MutexLockBlock mutex_(&m_mutex);
+        MutexLockBlock mutex_(m_mutex);
         state = m_state;
         m_isCancelled = true;
     }
@@ -225,7 +225,7 @@ void DefaultThread::Entry()
         if (CheckDestroy())
         {
             {
-                MutexLockBlock mutex_(&m_mutex);
+                MutexLockBlock mutex_(m_mutex);
                 m_state = STAT_EXIT;
             }
             pthread_exit(0);

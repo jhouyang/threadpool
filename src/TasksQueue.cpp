@@ -27,7 +27,7 @@ CancellableTask::~CancellableTask()
 
 void CancellableTask::SetState(CancellableTaskState state)
 {
-    MutexLockBlock mutex_(&m_statMutex);
+    MutexLockBlock mutex_(m_statMutex);
     m_state = state;
 }
 
@@ -45,7 +45,7 @@ void CancellableTask::Run()
     }
     catch (const CancelTaskException&)
     {
-        SetState(STAT_CANCELLED):
+        SetState(STAT_CANCELLED);
     }
     catch (...)
     {
@@ -63,7 +63,7 @@ void CancellableTask::Run()
 
 void CancellableTask::Cancel()
 {
-    MutexLockBlock mutex_(&m_cancelMutex);
+    MutexLockBlock mutex_(m_cancelMutex);
     m_needCancel = true;
 }
 
@@ -71,22 +71,22 @@ void CancellableTask::CancelWait()
 {
     Cancel();
 
-    MutexLockBlock mutex_(&m_statMutex);
+    MutexLockBlock mutex_(m_statMutex);
     while (m_state != STAT_CANCELLED && m_state != STAT_FINISHED)
     {
         pthread_cond_wait(&m_waitStatCond, &m_statMutex);
     }
 }
     
-CancellableTaskState CancellableTask::GetState() const
+CancellableTaskState CancellableTask::GetState()
 {
-    MutexLockBlock mutex_(&m_statMutex);
+    MutexLockBlock mutex_(m_statMutex);
     return m_state;
 }
 
 void CancellableTask::CheckCancellation()
 {
-    MutexLockBlock mutex_(&m_cancelMutex);
+    MutexLockBlock mutex_(m_cancelMutex);
     if (true == m_needCancel)
     {
         throw CancelTaskException();
@@ -124,7 +124,7 @@ BlockingTasksQueue::~BlockingTasksQueue()
 void BlockingTasksQueue::PushTask(TaskBase* task)
 {
     {
-        MutexLockBlock mutex_(&m_mutex);
+        MutexLockBlock mutex_(m_mutex);
         m_tasks.push_back(task);
     }
     if (m_waitThreads > 0)
@@ -135,7 +135,7 @@ void BlockingTasksQueue::PushTask(TaskBase* task)
 
 TaskBase* BlockingTasksQueue::PopTask()
 {
-    MutexLockBlock mutex_(&m_mutex);
+    MutexLockBlock mutex_(m_mutex);
 
     // we can't use if here, 
     // cause broadcast may wakeup more than one waiting thread
@@ -155,7 +155,7 @@ TaskBase* BlockingTasksQueue::PopTask()
 
 void BlockingTasksQueue::Pause()
 {
-    MutexLockBlock mutex_(&m_mutex);
+    MutexLockBlock mutex_(m_mutex);
     if (true == m_bCancel) return;
     m_bCancel = true;
 }
@@ -163,7 +163,7 @@ void BlockingTasksQueue::Pause()
 void BlockingTasksQueue::Resume()
 {
     {
-        MutexLockBlock mutex_(&m_mutex);
+        MutexLockBlock mutex_(m_mutex);
         if (false == m_bCancel) return;
         m_bCancel = false;
     }

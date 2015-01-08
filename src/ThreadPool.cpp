@@ -65,12 +65,12 @@ void TPool::Init() throw(std::string)
 
 void TPool::Pause()
 {
-    m_taskQueue.SetCancel(true);
+    m_taskQueue.Pause();
 }
 
 void TPool::Resume()
 {
-    m_taskQueue.SetCancel(false);
+    m_taskQueue.Resume();
 }
 
 void TPool::Stop(bool bForce)

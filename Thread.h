@@ -9,7 +9,7 @@ enum ThreadState
 {
     STAT_NEW,     // haven't call pthread_create
     STAT_CREATED, // already call pthread_create but wait for the Start() to wakeup
-    STAT_RUNNING, // IsRuning 
+    STAT_TRUNNING, // IsRuning 
     STAT_PAUSE,   // Is Paused
     STAT_EXIT,    // under exit state
 };
@@ -48,7 +48,7 @@ public:
     // this function is the entry point of thread
     virtual void Entry() = 0;
 
-    pthread_mutex_t* GetMutex();
+    pthread_mutex_t& GetMutex();
     
     // state query
     void SetState(ThreadState state);
