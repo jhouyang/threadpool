@@ -102,5 +102,7 @@ private:
     pthread_mutex_t m_mutex;
 };
 
+typedef BlockingTasksQueue TasksQueue;
+
 #endif  // THREADPOOL_TASKSQUEUE_H_
 
