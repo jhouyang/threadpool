@@ -13,6 +13,14 @@ public:
     // virtual bool IsTaskFinished() const = 0;
 };
 
+class FuncTask : public TaskBase
+{
+public:
+    // you can use boost::bind to get function you want
+    FuncTask(boost::function<void(void)> func);
+    void Do();
+};
+
 typedef boost::function< int (TaskBase*, TasksBase*) > SortFunc;
 class TasksQueueBase
 {
