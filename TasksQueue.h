@@ -59,6 +59,7 @@ private:
 
     pthread_mutex_t m_statMutex;
     pthread_cond_t m_waitStatCond;
+    pthread_mutex_t m_cancelMutex;
 };
 
 typedef boost::function< int (TaskBase*, TasksBase*) > SortFunc;
