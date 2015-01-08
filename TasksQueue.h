@@ -9,7 +9,7 @@ class TaskBase
 {
 public:
     virtual ~TaskBase() { }
-    virtual void Do() = 0;
+    virtual void Run() = 0;
     // virtual bool IsTaskFinished() const = 0;
 };
 
@@ -18,7 +18,7 @@ class FuncTask : public TaskBase
 public:
     // you can use boost::bind to get function you want
     FuncTask(boost::function<void(void)> func);
-    void Do();
+    void Run();
 };
 
 typedef boost::function< int (TaskBase*, TasksBase*) > SortFunc;
