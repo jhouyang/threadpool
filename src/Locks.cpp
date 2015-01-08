@@ -1,13 +1,13 @@
 #include "Locks.h"
 
-MutexLockBlock::MutexLockBlock(pthread_mutex_t* mutex)
+MutexLockBlock::MutexLockBlock(pthread_mutex_t& mutex)
     : m_mutex(mutex)
 {
-    pthread_mutex_lock(m_mutex);
+    pthread_mutex_lock(&m_mutex);
 }
 MutexLockBlock::~MutexLockBlock()
 {
-    pthread_mutex_unlock(m_mutex);
+    pthread_mutex_unlock(&m_mutex);
 }
 
 void printids(std::ostream& os)
