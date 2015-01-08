@@ -97,7 +97,7 @@ void CancellableTask::CheckCancellation()
 
 
 /*****************************Start of TasksQueue*************************************/
-TasksQueue::TasksQueue()
+BlockingTasksQueue::BlockingTasksQueue()
     : m_waitThreads(0)
     , m_bCancel(false)
 {
@@ -105,7 +105,7 @@ TasksQueue::TasksQueue()
     pthread_cond_init(&m_getTasksCond, NULL);
 }
 
-TasksQueue::~TasksQueue()
+BlockingTasksQueue::~BlockingTasksQueue()
 {
     pthread_mutex_destroy(&m_mutex);
     pthread_cond_destroy(&m_getTasksCond);
@@ -121,7 +121,7 @@ TasksQueue::~TasksQueue()
     }
 }
 
-void TasksQueue::PushTask(TaskBase* task)
+void BlockingTasksQueue::PushTask(TaskBase* task)
 {
     {
         MutexLockBlock mutex_(&m_mutex);
@@ -133,7 +133,7 @@ void TasksQueue::PushTask(TaskBase* task)
     }
 }
 
-TaskBase* TasksQueue::PopTask()
+TaskBase* BlockingTasksQueue::PopTask()
 {
     MutexLockBlock mutex_(&m_mutex);
 
@@ -153,15 +153,20 @@ TaskBase* TasksQueue::PopTask()
     return ptr;
 }
 
-void TasksQueue::SetCancel(bool bCancel /*= true*/)
+void BlockingTasksQueue::Pause()
+{
+    MutexLockBlock mutex_(&m_mutex);
+    if (true == m_bCancel) return;
+    m_bCancel = true;
+}
+
+void BlockingTasksQueue::Resume()
 {
     {
         MutexLockBlock mutex_(&m_mutex);
-        if (m_bCancel == bCancel) return;
-        m_bCancel = bCancel;
-        if (m_bCancel) return;
+        if (false == m_bCancel) return;
+        m_bCancel = false;
     }
-
     pthread_cond_broadcast(&m_getTasksCond);
 }
 /*****************************End of TasksQueue*************************************/
