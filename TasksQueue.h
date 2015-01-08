@@ -24,6 +24,43 @@ private:
     FuncType m_func;
 };
 
+enum CancellableTaskState
+{
+    STAT_INIT,
+    STAT_RUNNING,
+    STAT_CANCELLED,
+    STAT_FINISHED,
+};
+
+class CancellableTask : public TaskBase
+{
+public:
+    CancellableTask();
+    virtual ~CancellableTask();
+    
+    virtual void Run();
+    // CancelAsync
+    void Cancel();
+    // Cancel and wait until the task is really been cancelled
+    void CancelWait();
+    
+    CancellableTaskState GetState() const;
+private:
+    // implement the DoRun interface and add something you want to execute here
+    virtual void DoRun() = 0;
+
+    virtual void OnTaskFinished() {}
+    virtual void OnTaskCancelled() {}
+
+    void CheckCancellation();
+private:
+    CancellableTaskState m_state;
+    bool m_needCancel;
+
+    pthread_mutex_t m_statMutex;
+    pthread_cond_t m_waitStatCond;
+};
+
 typedef boost::function< int (TaskBase*, TasksBase*) > SortFunc;
 class TasksQueueBase
 {
