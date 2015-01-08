@@ -70,3 +70,13 @@ void TasksQueue::SetCancel(bool bCancel /*= true*/)
     pthread_cond_broadcast(&m_getTasksCond);
 }
 
+
+FuncTask::FuncTask(const FuncType& func)
+    : m_func(func)
+{
+}
+
+void FuncTask::Run()
+{
+    m_func();
+}
