@@ -80,13 +80,14 @@ public:
     void Sort(const SortFunc& func) {};
 };
 
-class TasksQueue
+class BlockingTasksQueue : public TasksQueueBase
 {
 public:
-    TasksQueue();
-    ~TasksQueue();
+    BlockingTasksQueue();
+    ~BlockingTasksQueue();
 
-    void SetCancel(bool bCancel = true);
+    void Pause();
+    void Resume();
 
     // could be used by threads
     TaskBase* PopTask();
