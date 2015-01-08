@@ -25,27 +25,40 @@ CancellableTask::~CancellableTask()
     pthread_cond_destroy(&m_waitStatCond);
 }
 
+void CancellableTask::SetState(CancellableTaskState state)
+{
+    MutexLockBlock mutex_(&m_statMutex);
+    m_state = state;
+}
+
 void CancellableTask::Run()
 {
+    bool taskFinishedUnexpected = false;
     try
     {
         CheckCancellation();
-        m_state = STAT_RUNNING;
+        SetState(STAT_RUNNING);
         
         DoRun();
         
-        m_state = STAT_FINISHED;
+        SetState(STAT_FINISHED);
     }
     catch (const CancelTaskException&)
     {
-        m_state = STAT_CANCELLED:
+        SetState(STAT_CANCELLED):
     }
     catch (...)
     {
-        // do noting here ?
-        m_state = STAT_CANCELLED:
+        taskFinishedUnexpected = true;
+        SetState(STAT_FINISHED);
     }
+
     pthread_cond_signal(&m_waitStatCond);
+    
+    if (taskFinishedUnexpected)
+    {
+        throw UnexpectedTaskRunException();
+    }
 }
 
 void CancellableTask::Cancel()
