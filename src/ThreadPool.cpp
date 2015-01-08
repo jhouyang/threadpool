@@ -32,7 +32,7 @@ namespace
                 TaskBase* task = m_taskQueue->PopTask();
                 assert(task);
 
-                task->Do();
+                task->Run();
                 delete task;
             }
         }
