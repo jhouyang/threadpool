@@ -236,7 +236,7 @@ void DefaultThread::Entry()
         TaskBase* task = m_pool->GetTask();
         assert(task);
 
-        task->Do();
+        task->Run();
         delete task;
     }
 }
