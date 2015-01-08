@@ -53,6 +53,7 @@ private:
     virtual void OnTaskCancelled() {}
 
     void CheckCancellation();
+    void SetState(CancellableTaskState state);
 private:
     CancellableTaskState m_state;
     bool m_needCancel;
