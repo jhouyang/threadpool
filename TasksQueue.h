@@ -3,6 +3,7 @@
 
 #include <list>
 #include <pthread.h>
+#include <boost/function.hpp>
 
 class TaskBase
 {
@@ -10,6 +11,23 @@ public:
     virtual ~TaskBase() { }
     virtual void Do() = 0;
     // virtual bool IsTaskFinished() const = 0;
+};
+
+typedef boost::function< int (TaskBase*) > SortFunc;
+class TasksQueueBase
+{
+public:
+    virtual ~TasksQueue() {}
+    
+    // should delete the TaskBase to avoid memory leak by the user ocde
+    virtual TaskBase* PopTask() = 0;
+    
+    // TasksQueueBase will own it lifetime
+    void PushTask(TaskBase* task) = 0;
+    
+    // sort tasks
+    // no need to support Sort function for all tasksQueue
+    void Sort(const SortFunc& func) {};
 };
 
 class TasksQueue
@@ -22,8 +40,6 @@ public:
 
     // could be used by threads
     TaskBase* PopTask();
-
-    // only used in main thread
     void PushTask(TaskBase* task);
 
 private:
