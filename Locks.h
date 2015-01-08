@@ -9,10 +9,10 @@
 class MutexLockBlock
 {
 public:
-    MutexLockBlock(pthread_mutex_t* mutex);
+    MutexLockBlock(pthread_mutex_t& mutex);
     ~MutexLockBlock();
 private:
-    pthread_mutex_t* m_mutex;
+    pthread_mutex_t& m_mutex;
 };
 
 void printids(std::ostream& os);
