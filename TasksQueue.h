@@ -13,7 +13,7 @@ public:
     // virtual bool IsTaskFinished() const = 0;
 };
 
-typedef boost::function< int (TaskBase*) > SortFunc;
+typedef boost::function< int (TaskBase*, TasksBase*) > SortFunc;
 class TasksQueueBase
 {
 public:
