@@ -5,7 +5,7 @@
 
 class PrintTask : public TaskBase
 {
-    virtual void Do()
+    virtual void Run()
     {
         printf("I'm PrintTask %p\n", this);
     }
