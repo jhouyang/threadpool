@@ -26,17 +26,17 @@ private:
     FuncType m_func;
 };
 
-enum CancellableTaskState
-{
-    STAT_INIT,
-    STAT_RUNNING,
-    STAT_CANCELLED,
-    STAT_FINISHED,
-};
-
 class CancellableTask : public TaskBase
 {
 public:
+    enum CancellableTaskState
+    {
+        STAT_INIT,
+        STAT_RUNNING,
+        STAT_CANCELLED,
+        STAT_FINISHED,
+    };
+
     CancellableTask();
     virtual ~CancellableTask();
     
