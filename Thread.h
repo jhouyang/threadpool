@@ -5,14 +5,6 @@
 #include <pthread.h>
 
 class TPool;
-enum ThreadState
-{
-    STAT_NEW,     // haven't call pthread_create
-    STAT_CREATED, // already call pthread_create but wait for the Start() to wakeup
-    STAT_TRUNNING, // IsRuning 
-    STAT_PAUSE,   // Is Paused
-    STAT_EXIT,    // under exit state
-};
 
 // TODO: although we have these five kinds of state, but cause we use signal to pause / resume/ stop thread.
 // And the Entry() function can be under infinite loop, it need Call CheckDestropy to make the state really works.
@@ -26,6 +18,15 @@ enum ThreadState
 class ThreadBase
 {
 public:
+    enum ThreadState
+    {
+        STAT_NEW,     // haven't call pthread_create
+        STAT_CREATED, // already call pthread_create but wait for the Start() to wakeup
+        STAT_TRUNNING, // IsRuning 
+        STAT_PAUSE,   // Is Paused
+        STAT_EXIT,    // under exit state
+    };
+
     ThreadBase(bool bDetached = false);
     virtual ~ThreadBase();
 
