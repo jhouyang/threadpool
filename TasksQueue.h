@@ -4,10 +4,12 @@
 #include <list>
 #include <pthread.h>
 #include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
 
 class TaskBase
 {
 public:
+    typedef boost::shared_ptr<TaskBase> TaskBasePtr;
     virtual ~TaskBase() { }
     virtual void Run() = 0;
     // virtual bool IsTaskFinished() const = 0;
@@ -67,6 +69,7 @@ typedef boost::function< int (TaskBase*, TaskBase*) > SortFunc;
 class TasksQueueBase
 {
 public:
+    typedef boost::shared_ptr<TasksQueueBasePtr> TasksQueueBasePtr;
     virtual ~TasksQueueBase() {}
     
     // should delete the TaskBase to avoid memory leak by the user ocde
