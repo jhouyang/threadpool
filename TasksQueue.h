@@ -86,6 +86,7 @@ public:
 class BlockingTasksQueue : public TasksQueueBase
 {
 public:
+    typedef boost::shared_ptr<BlockingTasksQueue> BlockingTasksQueuePtr;
     BlockingTasksQueue();
     ~BlockingTasksQueue();
 
