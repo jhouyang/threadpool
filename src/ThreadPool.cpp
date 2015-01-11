@@ -1,6 +1,7 @@
 #include "ThreadPool.h"
 #include "Thread.h"
 #include <assert.h>
+#include "Task.h"
 
 namespace
 {

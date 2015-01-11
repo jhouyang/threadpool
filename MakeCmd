@@ -1,2 +1,3 @@
 clang++ Locks.cpp TasksQueue.cpp Thread.cpp ThreadPool.cpp -g -fPIC -shared -I.. -o libTPool.so
 clang++ Test.cpp -g -o test -L . -lTPool
+clang++ Test.cpp -g -o test -I.. -I/Users/jouyang/Downloads/boost_1_57_0/ -L . -lTPool

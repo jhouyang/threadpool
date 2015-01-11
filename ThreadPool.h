@@ -7,6 +7,7 @@
 #include "TasksQueue.h"
 
 class ThreadBase;
+class TaskBase;
 
 class TPool
 {

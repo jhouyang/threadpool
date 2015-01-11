@@ -2,6 +2,7 @@
 #include "Locks.h"
 #include "ThreadPool.h"
 #include <assert.h>
+#include "Task.h"
 
 /*****************************Start of ThreadBase********************************************/
 ThreadBase::ThreadBase(bool bDetached)
