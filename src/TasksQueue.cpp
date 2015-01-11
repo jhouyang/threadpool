@@ -78,7 +78,7 @@ void CancellableTask::CancelWait()
     }
 }
     
-CancellableTaskState CancellableTask::GetState()
+CancellableTask::CancellableTaskState CancellableTask::GetState()
 {
     MutexLockBlock mutex_(m_statMutex);
     return m_state;

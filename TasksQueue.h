@@ -69,7 +69,7 @@ typedef boost::function< int (TaskBase*, TaskBase*) > SortFunc;
 class TasksQueueBase
 {
 public:
-    typedef boost::shared_ptr<TasksQueueBasePtr> TasksQueueBasePtr;
+    typedef boost::shared_ptr<TasksQueueBase> TasksQueueBasePtr;
     virtual ~TasksQueueBase() {}
     
     // should delete the TaskBase to avoid memory leak by the user ocde

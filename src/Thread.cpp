@@ -130,7 +130,7 @@ void ThreadBase::SetState(ThreadState state)
     m_state = state;
 }
 
-ThreadState ThreadBase::GetState()
+ThreadBase::ThreadState ThreadBase::GetState()
 {
     MutexLockBlock mutex_(m_mutex);
     return m_state;
