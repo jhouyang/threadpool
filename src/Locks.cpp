@@ -1,4 +1,5 @@
 #include "Locks.h"
+#include <sys/syscall.h>
 
 #ifndef assert
 #define assert(x) \
@@ -8,6 +9,19 @@
         } \
     } while(0)
 #endif
+
+namespace
+{
+    __thread pid_t t_cached_id = 0;
+    pid_t gettid()
+    {
+        if (t_cached_id == 0)
+        {
+            t_cached_id = static_cast<pid_t>(::syscall(SYS_gettid));
+        }
+        return t_cached_id;
+    }
+}
 
 class ThisThread
 {
