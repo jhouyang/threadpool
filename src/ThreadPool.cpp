@@ -86,11 +86,6 @@ void TPool::Stop(bool bForce)
     }
 }
 
-void TPool::SetThreadNumber(unsigned int tNumber)
-{
-    // TODO: how to rebuild threadpool?
-}
-
 void TPool::AddTask(TaskBase* task)
 {
     m_taskQueue.PushTask(task);

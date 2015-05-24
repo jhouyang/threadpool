@@ -15,11 +15,14 @@
 
 MutexLock::MutexLock(const pthread_mutexattr_t& attr)
     : holder_(0)
-    // own a copy of pthread_mutex_attr
-        // TODO : pthread_mutex_attr
-    , attr_(attr)
 {
     pthread_mutex_init(&mutex_, &attr);
+}
+
+MutexLock::MutexLock()
+    : holder_(0)
+{
+    pthread_mutex_init(&mutex_, NULL);
 }
 
 MutexLock::~MutexLock()

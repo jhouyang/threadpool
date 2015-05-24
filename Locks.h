@@ -12,7 +12,8 @@ public:
     friend class Condition;
     friend class MutexLockGuard;
 
-    MutexLock(const pthread_mutexattr_t& attr);
+    explicit MutexLock(const pthread_mutexattr_t& attr);
+    MutexLock();
     ~MutexLock();
 
     bool isLockedByThisThread();
@@ -31,7 +32,6 @@ private:
     pthread_mutex_t* getMutex();
 private:
     pthread_mutex_t mutex_;
-    pthread_mutexattr_t attr_;
     int holder_;
 };
 

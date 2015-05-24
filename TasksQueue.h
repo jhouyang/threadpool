@@ -3,6 +3,7 @@
 
 #include <list>
 #include <pthread.h>
+#include <Locks.h>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -45,8 +46,8 @@ private:
     unsigned int m_waitThreads;
     bool m_bCancel : 1;
 
-    pthread_cond_t m_getTasksCond;
-    pthread_mutex_t m_mutex;
+    MutexLock m_mutex;
+    Condition m_getTasksCond;
 };
 
 typedef BlockingTasksQueue TasksQueue;

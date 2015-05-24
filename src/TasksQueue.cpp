@@ -7,15 +7,13 @@
 BlockingTasksQueue::BlockingTasksQueue()
     : m_waitThreads(0)
     , m_bCancel(false)
+    , m_mutex()
+    , m_getTasksCond(m_mutex)
 {
-    pthread_mutex_init(&m_mutex, NULL);
-    pthread_cond_init(&m_getTasksCond, NULL);
 }
 
 BlockingTasksQueue::~BlockingTasksQueue()
 {
-    pthread_mutex_destroy(&m_mutex);
-    pthread_cond_destroy(&m_getTasksCond);
     if (!m_tasks.empty())
     {
         std::list<TaskBase*>::iterator it = m_tasks.begin();
@@ -31,25 +29,25 @@ BlockingTasksQueue::~BlockingTasksQueue()
 void BlockingTasksQueue::PushTask(TaskBase* task)
 {
     {
-        MutexLockBlock mutex_(m_mutex);
+        MutexLockGuard mutex_(m_mutex);
         m_tasks.push_back(task);
     }
     if (m_waitThreads > 0)
     {
-        pthread_cond_broadcast(&m_getTasksCond);
+        m_getTasksCond.notifyAll();
     }
 }
 
 TaskBase* BlockingTasksQueue::PopTask()
 {
-    MutexLockBlock mutex_(m_mutex);
+    MutexLockGuard mutex_(m_mutex);
 
     // we can't use if here, 
     // cause broadcast may wakeup more than one waiting thread
     ++m_waitThreads;
     while (m_tasks.empty() || m_bCancel)
     {
-        pthread_cond_wait(&m_getTasksCond, &m_mutex);
+        m_getTasksCond.wait();
     }
     --m_waitThreads;
 
@@ -62,7 +60,7 @@ TaskBase* BlockingTasksQueue::PopTask()
 
 void BlockingTasksQueue::Pause()
 {
-    MutexLockBlock mutex_(m_mutex);
+    MutexLockGuard mutex_(m_mutex);
     if (true == m_bCancel) return;
     m_bCancel = true;
 }
@@ -70,11 +68,11 @@ void BlockingTasksQueue::Pause()
 void BlockingTasksQueue::Resume()
 {
     {
-        MutexLockBlock mutex_(m_mutex);
+        MutexLockGuard mutex_(m_mutex);
         if (false == m_bCancel) return;
         m_bCancel = false;
     }
-    pthread_cond_broadcast(&m_getTasksCond);
+    m_getTasksCond.notifyAll();
 }
 /*****************************End of TasksQueue*************************************/
 
