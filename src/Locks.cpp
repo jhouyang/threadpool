@@ -1,5 +1,8 @@
 #include "Locks.h"
+#include "ThisThread.h"
 #include <sys/syscall.h>
+
+#include <stdlib.h>
 
 #ifndef assert
 #define assert(x) \
@@ -9,28 +12,6 @@
         } \
     } while(0)
 #endif
-
-namespace
-{
-    __thread pid_t t_cached_id = 0;
-    pid_t gettid()
-    {
-        if (t_cached_id == 0)
-        {
-            t_cached_id = static_cast<pid_t>(::syscall(SYS_gettid));
-        }
-        return t_cached_id;
-    }
-}
-
-class ThisThread
-{
-public:
-    static pthread_t tid()
-    {
-        return pthread_self();
-    }
-};
 
 MutexLock::MutexLock(const pthread_mutexattr_t& attr)
     : holder_(0)
@@ -108,14 +89,6 @@ void Condition::notify()
 void Condition::notifyAll()
 {
     pthread_cond_broadcast(&cond_);
-}
-
-void printids(std::ostream& os)
-{
-    pid_t pid = getpid();
-    pthread_t tid = pthread_self();
-    
-    os << "process ID is " << pid << "\t" << "thread ID is " << tid << "\n";
 }
 
 

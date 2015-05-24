@@ -4,8 +4,6 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#include <iostream>
-
 class Condition;
 class MutexLockGuard;
 class MutexLock
@@ -34,7 +32,7 @@ private:
 private:
     pthread_mutex_t mutex_;
     pthread_mutexattr_t attr_;
-    pthread_t holder_;
+    int holder_;
 };
 
 class MutexLockGuard
@@ -62,8 +60,6 @@ private:
     MutexLock& mutex_;
     pthread_cond_t cond_;
 };
-
-void printids(std::ostream& os);
 
 #endif  // THREADPOOL_LOCKS_H_
 
