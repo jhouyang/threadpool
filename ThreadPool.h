@@ -15,8 +15,6 @@ public:
     explicit TPool(unsigned int tNumber) throw(std::string);
     ~TPool();
 
-    void SetThreadNumber(unsigned int tNumber);
-
     // flow control functions
     // set bForce = false will just stop accept new tasks but will execute all tasks in TasksQueue
     // set bForce = true; won't accept any new tasks

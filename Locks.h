@@ -6,13 +6,61 @@
 
 #include <iostream>
 
-class MutexLockBlock
+class Condition;
+class MutexLockGuard;
+class MutexLock
 {
 public:
-    MutexLockBlock(pthread_mutex_t& mutex);
-    ~MutexLockBlock();
+    friend class Condition;
+    friend class MutexLockGuard;
+
+    MutexLock(const pthread_mutexattr_t& attr);
+    ~MutexLock();
+
+    bool isLockedByThisThread();
+    void assertLocked();
+
 private:
-    pthread_mutex_t& m_mutex;
+    // no copyable
+    MutexLock(const MutexLock&);
+    MutexLock& operator=(const MutexLock&);
+
+private:
+    // only MutexLockGuard can acess functions below
+    void lock();
+    void unlock();
+
+    pthread_mutex_t* getMutex();
+private:
+    pthread_mutex_t mutex_;
+    pthread_mutexattr_t attr_;
+    pthread_t holder_;
+};
+
+class MutexLockGuard
+{
+public:
+    MutexLockGuard(MutexLock& mutex);
+    ~MutexLockGuard();
+private:
+    MutexLock& mutex_;
+};
+
+class Condition
+{
+public:
+    Condition(MutexLock& mutex);
+    ~Condition();
+
+    void wait();
+    void notify();
+    void notifyAll();
+private:
+    Condition(const Condition&);
+    Condition& operator=(const Condition&);
+private:
+    MutexLock& mutex_;
+    pthread_cond_t cond_;
 };
 
 void printids(std::ostream& os);
