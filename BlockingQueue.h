@@ -1,7 +1,9 @@
 #ifndef BLOCKINGQUEUE_H_
 #define BLOCKINGQUEUE_H_
 
-// Use this trait to make sure we parse const ref or 
+#include "boost/noncopyable.hpp"
+
+// Use this trait to make sure we parse const T& or const T*
 template <typename T>
 struct ConstRefTrait {
   typedef const T& ConRefType;
@@ -14,6 +16,7 @@ struct ConstRefTrait<T*> {
   typedef T*& RefType;
 };
 
+// XXX : long is enough ?
 typedef unsigned long TimeUnit;
 
 template <typename T>
