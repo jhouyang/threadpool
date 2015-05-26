@@ -56,7 +56,7 @@ public:
     void notify();
     void notifyAll();
     
-    void timedWait(TimeUnit seconds);
+    void timedWait(TimeUnit ms);
 private:
     Condition(const Condition&);
     Condition& operator=(const Condition&);
