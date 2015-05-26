@@ -3,6 +3,7 @@
 
 #include <list>
 #include <pthread.h>
+#include "Locks.h"
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -61,9 +62,9 @@ private:
     CancellableTaskState m_state;
     bool m_needCancel;
 
-    pthread_mutex_t m_statMutex;
-    pthread_cond_t m_waitStatCond;
-    pthread_mutex_t m_cancelMutex;
+    MutexLock m_statMutex;
+    Condition m_waitStatCond;
+    MutexLock m_cancelMutex;
 };
 
 #endif  // THREADPOOL_TASK_H_
