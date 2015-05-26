@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+typedef unsigned long TimeUnit;
+
 class Condition;
 class MutexLockGuard;
 class MutexLock
@@ -53,6 +55,8 @@ public:
     void wait();
     void notify();
     void notifyAll();
+    
+    void timedWait(TimeUnit seconds);
 private:
     Condition(const Condition&);
     Condition& operator=(const Condition&);
