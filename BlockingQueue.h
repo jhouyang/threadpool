@@ -45,6 +45,8 @@ public:
   // other utility functions
   virtual size_t size() const = 0;
   virtual bool isEmpty() const= 0;
+  
+  // XXX : should I support front operation ??
 };
 
 #endif
