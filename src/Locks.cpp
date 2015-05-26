@@ -102,7 +102,7 @@ void Condition::timedWait(TimeUnit ms)
     struct timespec timeout;
     ::toTimeSpec(timeout, ms);
     
-    int ret = pthread_cond_timedwait(&cond_, mutex_getMutex, &timeout);
+    int ret = pthread_cond_timedwait(&cond_, mutex_.getMutex(), &timeout);
     // TODO : how to deal with ret ?
     // refer to http://linux.die.net/man/3/pthread_cond_timedwait
     // it will only return failure : EINVAL EPERM

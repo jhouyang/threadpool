@@ -17,7 +17,7 @@ namespace ThisThread
     // TODO : head file of __thread
     __thread int t_cachedId = 0;
     
-    void cacheId()
+    void cacheTid()
     {
         if (t_cachedId == 0)
         {
