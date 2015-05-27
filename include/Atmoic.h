@@ -1,6 +1,7 @@
 #ifndef ATOMIC_H_
 #define ATOMIC_H_
 
+#include "Locks.h"
 #include <boost/noncopyable.hpp>
 // TODO : use assemble to implement atomic
 // TODO : use template to apply to more types
