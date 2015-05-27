@@ -35,7 +35,7 @@ public:
 
     // unblocking pop until timeout or pop sucessfully
     // User should check the return value is valid or not
-    virtual ElementType popUntil(TimeUnit time = 0) = 0;
+    // virtual ElementType popUntil(TimeUnit time = 0) = 0;
 
     // this is uncopy version of popUtil
     // if return false, these mush be some exceptions happened
