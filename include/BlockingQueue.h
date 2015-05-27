@@ -30,10 +30,10 @@ public:
 
     virtual ~BlockingQueue() {}
 
-    // blocking push until timeout or push sucessfully
-    virtual void pushUntil(ParamType ele, TimeUnit time = 0) = 0;
+    // unblocking push until timeout or push sucessfully
+    virtual bool pushUntil(ParamType ele, TimeUnit time = 0) = 0;
 
-    // blocking pop until timeout or pop sucessfully
+    // unblocking pop until timeout or pop sucessfully
     // User should check the return value is valid or not
     virtual ElementType popUntil(TimeUnit time = 0) = 0;
 
@@ -41,11 +41,10 @@ public:
     // if return false, these mush be some exceptions happened
     virtual bool popUntil(ElementType& ele, TimeUnit time = 0) = 0;
 
-
-    // unblocking pop and push
+    // blocking pop and push
     virtual void push(ParamType ele) = 0;
     virtual ElementType pop() = 0;
-    virtual bool pop(ElementType& ele) = 0;
+    virtual void pop(ElementType& ele) = 0;
 
     // other utility functions
     virtual size_t size() const = 0;
