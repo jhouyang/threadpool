@@ -63,7 +63,7 @@ private:
     bool m_needCancel;
 
     MutexLock m_statMutex;
-    Condition m_waitStatCond;
+    Condition m_cancelCond;
     MutexLock m_cancelMutex;
 };
 
