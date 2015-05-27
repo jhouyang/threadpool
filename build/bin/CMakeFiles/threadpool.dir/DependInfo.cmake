@@ -6,6 +6,7 @@ SET(CMAKE_DEPENDS_LANGUAGES
 SET(CMAKE_DEPENDS_CHECK_CXX
   "/Users/jouyang/gtpool_plus/src/Locks.cpp" "/Users/jouyang/gtpool_plus/build/bin/CMakeFiles/threadpool.dir/Locks.cpp.o"
   "/Users/jouyang/gtpool_plus/src/Task.cpp" "/Users/jouyang/gtpool_plus/build/bin/CMakeFiles/threadpool.dir/Task.cpp.o"
+  "/Users/jouyang/gtpool_plus/src/TaskBlockingQueue.cpp" "/Users/jouyang/gtpool_plus/build/bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o"
   "/Users/jouyang/gtpool_plus/src/TasksQueue.cpp" "/Users/jouyang/gtpool_plus/build/bin/CMakeFiles/threadpool.dir/TasksQueue.cpp.o"
   "/Users/jouyang/gtpool_plus/src/ThisThread.cpp" "/Users/jouyang/gtpool_plus/build/bin/CMakeFiles/threadpool.dir/ThisThread.cpp.o"
   "/Users/jouyang/gtpool_plus/src/Thread.cpp" "/Users/jouyang/gtpool_plus/build/bin/CMakeFiles/threadpool.dir/Thread.cpp.o"

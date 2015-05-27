@@ -41,7 +41,7 @@ public:
         }
     }
     
-    in getAndSet(int val)
+    int getAndSet(int val)
     {
         {
             MutexLockGuard lock(m_lock);

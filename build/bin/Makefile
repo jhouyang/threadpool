@@ -163,6 +163,30 @@ Task.cpp.s:
 	cd /Users/jouyang/gtpool_plus/build && $(MAKE) -f bin/CMakeFiles/threadpool.dir/build.make bin/CMakeFiles/threadpool.dir/Task.cpp.s
 .PHONY : Task.cpp.s
 
+TaskBlockingQueue.o: TaskBlockingQueue.cpp.o
+.PHONY : TaskBlockingQueue.o
+
+# target to build an object file
+TaskBlockingQueue.cpp.o:
+	cd /Users/jouyang/gtpool_plus/build && $(MAKE) -f bin/CMakeFiles/threadpool.dir/build.make bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o
+.PHONY : TaskBlockingQueue.cpp.o
+
+TaskBlockingQueue.i: TaskBlockingQueue.cpp.i
+.PHONY : TaskBlockingQueue.i
+
+# target to preprocess a source file
+TaskBlockingQueue.cpp.i:
+	cd /Users/jouyang/gtpool_plus/build && $(MAKE) -f bin/CMakeFiles/threadpool.dir/build.make bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.i
+.PHONY : TaskBlockingQueue.cpp.i
+
+TaskBlockingQueue.s: TaskBlockingQueue.cpp.s
+.PHONY : TaskBlockingQueue.s
+
+# target to generate assembly for a file
+TaskBlockingQueue.cpp.s:
+	cd /Users/jouyang/gtpool_plus/build && $(MAKE) -f bin/CMakeFiles/threadpool.dir/build.make bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.s
+.PHONY : TaskBlockingQueue.cpp.s
+
 TasksQueue.o: TasksQueue.cpp.o
 .PHONY : TasksQueue.o
 
@@ -274,6 +298,9 @@ help:
 	@echo "... Task.o"
 	@echo "... Task.i"
 	@echo "... Task.s"
+	@echo "... TaskBlockingQueue.o"
+	@echo "... TaskBlockingQueue.i"
+	@echo "... TaskBlockingQueue.s"
 	@echo "... TasksQueue.o"
 	@echo "... TasksQueue.i"
 	@echo "... TasksQueue.s"

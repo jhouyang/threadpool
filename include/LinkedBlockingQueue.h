@@ -1,7 +1,6 @@
 #ifndef LINKEDBLOCKINGQUEUE_H_
 #define LINKEDBLOCKINGQUEUE_H_
 
-#include <error>
 #include <list>
 #include <boost/typeof/typeof.hpp>
 #include <boost/foreach.hpp>
@@ -12,6 +11,7 @@
 
 #define DEFAULT_MAX_CAPABILITY INT16_MAX
 
+// this a bounded linked BlockingQueue, by default its size if INT16_MAX
 template <typename T>
 class LinkedBlockingQueue : public BlockingQueue<T>
 {
@@ -21,16 +21,22 @@ class LinkedBlockingQueue : public BlockingQueue<T>
             MutexLockGuard popLock(m_popLock);
     #define END_FULLY_LOCK \
         }
+
+    typedef T ElementType;
+    typedef typename ConstRefTrait<T>::ConRefType ParamType;
+    typedef typename ConstRefTrait<T>::RefType RefType;
 public: 
     explicit LinkedBlockingQueue(int capacity)
-        : m_capacity(capacity), m_count(0)
+        : m_capacity(capacity), m_count(0),
+        m_popLock(), m_emptyCond(m_popLock),
+        m_putLock(), m_fullCond(m_putLock)
     {
         assert(m_capacity > 0);
     }
 
     virtual bool pushUntil(ParamType ele, TimeUnit time = 0) {
         // nonblocking push
-        if (time == 0 && m_count.equal(m_capability)) {
+        if (time == 0 && m_count.equal(m_capacity)) {
             return false;
         }
 
@@ -133,6 +139,7 @@ public:
         return m_count.equal(0);
     }
 
+    typedef boost::function< bool (ParamType, ParamType) > EqualFunc;
     virtual bool remove(ParamType ele, EqualFunc func = EqualFunc()) {
         BEGIN_FULLY_LOCK
         BOOST_AUTO(it, m_list.begin());
@@ -224,7 +231,7 @@ private:
 
     AtomicInt m_count;
     
-    std::list<ELementType> m_list;
+    std::list<ElementType> m_list;
 
     const int m_capacity;
 };

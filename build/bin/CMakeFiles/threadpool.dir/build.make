@@ -190,6 +190,29 @@ bin/CMakeFiles/threadpool.dir/ThisThread.cpp.o.provides: bin/CMakeFiles/threadpo
 
 bin/CMakeFiles/threadpool.dir/ThisThread.cpp.o.provides.build: bin/CMakeFiles/threadpool.dir/ThisThread.cpp.o
 
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o: bin/CMakeFiles/threadpool.dir/flags.make
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o: ../src/TaskBlockingQueue.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /Users/jouyang/gtpool_plus/build/CMakeFiles $(CMAKE_PROGRESS_7)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o"
+	cd /Users/jouyang/gtpool_plus/build/bin && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o -c /Users/jouyang/gtpool_plus/src/TaskBlockingQueue.cpp
+
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.i"
+	cd /Users/jouyang/gtpool_plus/build/bin && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /Users/jouyang/gtpool_plus/src/TaskBlockingQueue.cpp > CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.i
+
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.s"
+	cd /Users/jouyang/gtpool_plus/build/bin && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /Users/jouyang/gtpool_plus/src/TaskBlockingQueue.cpp -o CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.s
+
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.requires:
+.PHONY : bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.requires
+
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.provides: bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.requires
+	$(MAKE) -f bin/CMakeFiles/threadpool.dir/build.make bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.provides.build
+.PHONY : bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.provides
+
+bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.provides.build: bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o
+
 # Object files for target threadpool
 threadpool_OBJECTS = \
 "CMakeFiles/threadpool.dir/Locks.cpp.o" \
@@ -197,7 +220,8 @@ threadpool_OBJECTS = \
 "CMakeFiles/threadpool.dir/Task.cpp.o" \
 "CMakeFiles/threadpool.dir/Thread.cpp.o" \
 "CMakeFiles/threadpool.dir/ThreadPool.cpp.o" \
-"CMakeFiles/threadpool.dir/ThisThread.cpp.o"
+"CMakeFiles/threadpool.dir/ThisThread.cpp.o" \
+"CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o"
 
 # External object files for target threadpool
 threadpool_EXTERNAL_OBJECTS =
@@ -208,6 +232,7 @@ bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/Task.cpp.o
 bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/Thread.cpp.o
 bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/ThreadPool.cpp.o
 bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/ThisThread.cpp.o
+bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o
 bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/build.make
 bin/libthreadpool.dylib: bin/CMakeFiles/threadpool.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library libthreadpool.dylib"
@@ -223,6 +248,7 @@ bin/CMakeFiles/threadpool.dir/requires: bin/CMakeFiles/threadpool.dir/Task.cpp.o
 bin/CMakeFiles/threadpool.dir/requires: bin/CMakeFiles/threadpool.dir/Thread.cpp.o.requires
 bin/CMakeFiles/threadpool.dir/requires: bin/CMakeFiles/threadpool.dir/ThreadPool.cpp.o.requires
 bin/CMakeFiles/threadpool.dir/requires: bin/CMakeFiles/threadpool.dir/ThisThread.cpp.o.requires
+bin/CMakeFiles/threadpool.dir/requires: bin/CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o.requires
 .PHONY : bin/CMakeFiles/threadpool.dir/requires
 
 bin/CMakeFiles/threadpool.dir/clean:

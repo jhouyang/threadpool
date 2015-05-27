@@ -10,11 +10,11 @@
 class TaskBase
 {
 public:
-    typedef boost::shared_ptr<TaskBase> TaskBasePtr;
     virtual ~TaskBase() { }
     virtual void Run() = 0;
     // virtual bool IsTaskFinished() const = 0;
 };
+typedef boost::shared_ptr<TaskBase> TaskBasePtr;
 
 typedef boost::function< void(void) > FuncType;
 class FuncTask : public TaskBase

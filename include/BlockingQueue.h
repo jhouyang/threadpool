@@ -21,13 +21,12 @@ struct ConstRefTrait<T*> {
 typedef unsigned long TimeUnit;
 
 template <typename T>
-class BlockingQueue : private boost::nocopyable
+class BlockingQueue : private boost::noncopyable
 {
-public:
     typedef T ElementType;
     typedef typename ConstRefTrait<T>::ConRefType ParamType;
     typedef typename ConstRefTrait<T>::RefType RefType;
-
+public:
     virtual ~BlockingQueue() {}
 
     // unblocking push until timeout or push sucessfully

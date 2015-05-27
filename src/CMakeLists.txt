@@ -8,6 +8,7 @@ SET(SRC_LIST Locks.cpp
         Thread.cpp
         ThreadPool.cpp
         ThisThread.cpp
+        TaskBlockingQueue.cpp
         )
 
 ADD_LIBRARY(threadpool SHARED ${SRC_LIST})

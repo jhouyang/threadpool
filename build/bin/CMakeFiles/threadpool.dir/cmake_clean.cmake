@@ -5,6 +5,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/threadpool.dir/Thread.cpp.o"
   "CMakeFiles/threadpool.dir/ThreadPool.cpp.o"
   "CMakeFiles/threadpool.dir/ThisThread.cpp.o"
+  "CMakeFiles/threadpool.dir/TaskBlockingQueue.cpp.o"
   "libthreadpool.pdb"
   "libthreadpool.dylib"
 )
