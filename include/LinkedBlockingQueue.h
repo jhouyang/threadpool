@@ -4,6 +4,7 @@
 #include <error>
 #include <list>
 #include <boost/typeof/typeof.hpp>
+#include <boost/foreach.hpp>
 
 #include "BlockingQueue.h"
 #include "Locks.h"
@@ -98,7 +99,6 @@ public:
             while (m_count.get() == 0) {
                 m_emptyCond.wait();
             }
-            
             oldCount = doPopAndNotify_unlock(ele);
         }
         
@@ -167,6 +167,20 @@ public:
         if (m_count.getAndSet(0) == m_capacity) {
             m_fullCond.notify();
         }
+        END_FULLY_LOCK
+    }
+    
+    bool contains(ParamType ele, EqualFunc func = EqualFunc()) const {
+        BEGIN_FULLY_LOCK
+        BOOST_FOREACH(ParamType itEle, m_list) {
+            if (func && func(itEle, ele)) {
+                return true;
+            }
+            else if (ele == itEle) {
+                return true;
+            }
+        }
+        return false;
         END_FULLY_LOCK
     }
 private:
