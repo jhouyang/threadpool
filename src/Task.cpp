@@ -5,7 +5,6 @@
 namespace
 {
     struct CancelTaskException {};
-    struct UnexpectedTaskRunException {};
 }  // anonymous namespace
 
 /*****************************Start of CancellableTask*************************************/
@@ -13,8 +12,7 @@ CancellableTask::CancellableTask()
     : m_needCancel(false)
     , m_state(STAT_INIT)
     , m_statMutex()
-    , m_cancelMutex()
-    , m_waitStatCond(m_statMutex)
+    , m_cancelCond(m_cancelMutex)
 
 {
 }
@@ -31,7 +29,6 @@ void CancellableTask::SetState(CancellableTaskState state)
 
 void CancellableTask::Run()
 {
-    bool taskFinishedUnexpected = false;
     try
     {
         CheckCancellation();
@@ -45,18 +42,8 @@ void CancellableTask::Run()
     {
         SetState(STAT_CANCELLED);
     }
-    catch (...)
-    {
-        taskFinishedUnexpected = true;
-        SetState(STAT_FINISHED);
-    }
 
-    m_waitStatCond.notify();
-    
-    if (taskFinishedUnexpected)
-    {
-        throw UnexpectedTaskRunException();
-    }
+    m_cancelCond.notifyAll();
 }
 
 void CancellableTask::Cancel()
@@ -69,10 +56,10 @@ void CancellableTask::CancelWait()
 {
     Cancel();
 
-    MutexLockGuard mutex_(m_statMutex);
+    MutexLockGuard mutex_(m_cancelMutex);
     while (m_state != STAT_CANCELLED && m_state != STAT_FINISHED)
     {
-        m_waitStatCond.wait();
+        m_cancelCond.wait();
     }
 }
     
