@@ -25,7 +25,7 @@ public:
         }
     }
     
-    int getAndIncre() const
+    int getAndIncre()
     {
         {
             MutexLockGuard lock(m_lock);
@@ -33,11 +33,21 @@ public:
         }
     }
     
-    int getAndDecre() const
+    int getAndDecre()
     {
         {
             MutexLockGuard lock(m_lock);
             return m_val--;
+        }
+    }
+    
+    in getAndSet(int val)
+    {
+        {
+            MutexLockGuard lock(m_lock);
+            int tmp = m_val;
+            m_val = val;
+            return tmp;
         }
     }
     
@@ -54,4 +64,15 @@ private:
     int m_val;
 };
 
+/*
+typedef struct { volatile int counter; } atomic_t;
+#define automic_set(v, i) (((v)->counter) = (i)) 
+static __inline__ void atomic_add(int i, atomic_t *v)
+{
+__asm__ __volatile__(
+LOCK "addl %1,%0"
+:"=m" (v->counter)
+:"ir" (i), "m" (v->counter));
+} 
+*/
 #endif  // ATOMIC_H_
