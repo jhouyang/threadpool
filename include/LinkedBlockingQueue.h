@@ -2,73 +2,205 @@
 #define LINKEDBLOCKINGQUEUE_H_
 
 #include <list>
+#include <boost/typeof/typeof.hpp>
+
 #include "BlockingQueue.h"
 #include "Locks.h"
+#include "Atomic.h"
 
-#define DEFAULT_MAX_CAPABILITY INT32_MAX
+#define DEFAULT_MAX_CAPABILITY INT16_MAX
+
 template <typename T>
 class LinkedBlockingQueue : public BlockingQueue<T>
 {
+    #define BEGIN_FULLY_LOCK \
+        MutexLockGuard putLock(m_putLock); \
+        { \
+            MutexLockGuard popLock(m_popLock);
+    #define END_FULLY_LOCK \
+        }
 public: 
-    explicit LinkedBlockingQueue(unsigned int capability)
-        : m_capability(capability)
+    explicit LinkedBlockingQueue(int capability)
+        : m_capability(capability), m_count(0)
     {
+        assert(capability > 0);
     }
 
-    virtual void pushUntil(ParamType ele, TimeUnit time = 0)
-    {
-    }
+    virtual bool pushUntil(ParamType ele, TimeUnit time = 0) {
+        // nonblocking push
+        if (time == 0 && m_count.equal(m_capability)) {
+            return false;
+        }
 
-    virtual ElementType popUntil(TimeUnit time = 0)
-    {
-    }
+        int oldCount = -1;
+        {
+            MutexLockGuard putLock(m_putLock);
+            while (m_count.get() == m_capability) {
+                if (m_fullCond.timedWait(time) < 0 ) {
+                    return false;
+                }
+            }
+        
+            oldCount = doPushAndNofity_unlock(ele);
+        }
 
-    virtual bool popUntil(ElementType& ele, TimeUnit time = 0)
-    {
+        if (oldCount == 0) {
+            notifyNotEmpty();
+        }
         return true;
     }
 
-    virtual void push(ParamType ele)
-    {
+    virtual bool popUntil(RefType ele, TimeUnit time = 0) {
+        // nonblocking pop
+        if (time == 0 && m_count.equal(0)) {
+            return false;
+        }
+        int oldCount = -1;
+        {
+            MutexLockGuard popLock(m_popLock);
+            while (m_count.get() == 0) {
+                if (m_emptyCond.timedWait(time) < 0 ) {
+                    return false;
+                }
+            }
+        
+            oldCount = doPopAndNotify_unlock(ele);
+        }
+
+        if (oldCount == m_capcability) {
+            notifyNotFull();
+        }
+        return true;
     }
 
-    virtual ElementType pop()
-    {
+    virtual void push(ParamType ele) {
+        int oldCount = -1;
+        {
+            MutexLockGuard putLock(m_putLock);
+            while (m_count.get() == m_capability) {
+                m_fullCond.wait();
+            }
+        
+            oldCount = doPushAndNofity_unlock(ele);
+        }
+        
+        if (oldCount == 0) {
+            notifyNotEmpty();
+        }
     }
 
-    virtual bool pop(ElementType& ele)
-    {
+    virtual ElementType pop() {
+        int oldCount = -1;
+        ElementType ele;
+        {
+            MutexLockGuard takeLock(m_popLock);
+            while (m_count.get() == 0) {
+                m_emptyCond.wait();
+            }
+            
+            oldCount = doPopAndNotify_unlock(ele);
+        }
+        
+        if (oldCount == m_capability) {
+            notifyNotFull();
+        }
+        
+        return ele;
+    }
+
+    virtual void pop(RefType ele) {
+        int oldCount = -1;
+        {
+            MutexLockGuard takeLock(m_popLock);
+            while (m_count.get() == 0) {
+                m_emptyCond.wait();
+            }
+            
+            oldCount = doPopAndNotify_unlock(ele);
+        }
+        
+        if (oldCount == m_capability) {
+            notifyNotFull();
+        }
+    }
+
+    virtual size_t size() const {
+        return m_count.get();
+    }
+
+    virtual bool isEmpty() const {
+        return m_count.equal(0);
+    }
+
+    virtual bool remove(ParamType ele, EqualFunc func = EqualFunc()) {
+        BEGIN_FULLY_LOCK
+        BOOST_AUTO(it, m_list.begin());
+        BOOST_AUTO(itEnd, m_list.end());
+
+        bool equal = false;
+        while (it != itEnd) {
+            if (func) {
+                equal = func(ele, *it);
+            }
+            else {
+                equal = (ele == *it);
+            }
+            
+            if (equal) {
+                m_list.erase(it);
+                return true;
+            }
+            
+            ++it;
+        }
+        
         return false;
+        END_FULLY_LOCK
     }
-
-    virtual size_t size() const
-    {
-        return 0;
+private:
+    void notifyNotEmpty() const {
+        MutexLockGuard popLock(m_popLock);
+        m_emptyCond.notify();
     }
-
-    virtual bool isEmpty() const
-    {
-        return true;
+    
+    void notifyNotFull() const {
+        MutexLockGuard putLock(m_putLock);
+        m_fullCond.notify();
     }
+    
+    int doPushAndNofity_unlock(ParamType ele) {
+        m_list.push_back(ele);
+        int oldCount = m_count.getAndIncre();
+        if (oldCount + 1 < m_capability) {
+            m_fullCond.notify();
+        }
+        return oldCount;
+    }
+    
+    int doPopAndNotify_unlock(RefType ele) {
+        ele = m_list.front();
+        m_list.pop_front();
 
-    virtual bool remove(ParamType ele, EqualFunc func = EqualFunc())
-    {
-        MutexLockGuard lock1(m_frontLock);
-        MutexLockGuard lock2(m_backLock);
-        return true;
+        int oldCount = m_count.getAndDecre();
+        if (oldCount > 1) {
+            m_emptyCond.notify();
+        }
+        return oldCount;
     }
 private:
     // pop front : front lock and empty condition
-    MutexLock m_frontLock;
-    Condition m_emptyCond;
+    mutable MutexLock m_popLock;
+    mutable Condition m_emptyCond;
 
     // push back : back lock and fully condition
-    MutexLock m_backLock;
-    Condition m_fullCond;
+    mutable MutexLock m_putLock;
+    mutable Condition m_fullCond;
 
-    // element type ??
-    std::list<ElementType> m_elements;
-    const unsigned long int m_capability;
+    AtomicInt m_count;
+    
+    std::list<ELementType> m_list;
+
+    const int m_capability;
 };
 #endif  // LINKEDBLOCKINGQUEUE_H_
 
