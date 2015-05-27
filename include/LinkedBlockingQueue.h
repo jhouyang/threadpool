@@ -20,10 +20,10 @@ class LinkedBlockingQueue : public BlockingQueue<T>
     #define END_FULLY_LOCK \
         }
 public: 
-    explicit LinkedBlockingQueue(int capability)
-        : m_capability(capability), m_count(0)
+    explicit LinkedBlockingQueue(int capacity)
+        : m_capacity(capacity), m_count(0)
     {
-        assert(capability > 0);
+        assert(m_capacity > 0);
     }
 
     virtual bool pushUntil(ParamType ele, TimeUnit time = 0) {
@@ -35,7 +35,7 @@ public:
         int oldCount = -1;
         {
             MutexLockGuard putLock(m_putLock);
-            while (m_count.get() == m_capability) {
+            while (m_count.get() == m_capacity) {
                 if (m_fullCond.timedWait(time) < 0 ) {
                     return false;
                 }
@@ -67,7 +67,7 @@ public:
             oldCount = doPopAndNotify_unlock(ele);
         }
 
-        if (oldCount == m_capcability) {
+        if (oldCount == m_capacity) {
             notifyNotFull();
         }
         return true;
@@ -77,7 +77,7 @@ public:
         int oldCount = -1;
         {
             MutexLockGuard putLock(m_putLock);
-            while (m_count.get() == m_capability) {
+            while (m_count.get() == m_capacity) {
                 m_fullCond.wait();
             }
         
@@ -101,7 +101,7 @@ public:
             oldCount = doPopAndNotify_unlock(ele);
         }
         
-        if (oldCount == m_capability) {
+        if (oldCount == m_capacity) {
             notifyNotFull();
         }
         
@@ -119,7 +119,7 @@ public:
             oldCount = doPopAndNotify_unlock(ele);
         }
         
-        if (oldCount == m_capability) {
+        if (oldCount == m_capacity) {
             notifyNotFull();
         }
     }
@@ -157,6 +157,17 @@ public:
         return false;
         END_FULLY_LOCK
     }
+
+    void clear() {
+        BEGIN_FULLY_LOCK
+        // will call destructor if ElementType is not a pointee
+        m_list.clear();
+        
+        if (m_count.getAndSet(0) == m_capacity) {
+            m_fullCond.notify();
+        }
+        END_FULLY_LOCK
+    }
 private:
     void notifyNotEmpty() const {
         MutexLockGuard popLock(m_popLock);
@@ -171,7 +182,7 @@ private:
     int doPushAndNofity_unlock(ParamType ele) {
         m_list.push_back(ele);
         int oldCount = m_count.getAndIncre();
-        if (oldCount + 1 < m_capability) {
+        if (oldCount + 1 < m_capacity) {
             m_fullCond.notify();
         }
         return oldCount;
@@ -200,7 +211,7 @@ private:
     
     std::list<ELementType> m_list;
 
-    const int m_capability;
+    const int m_capacity;
 };
 #endif  // LINKEDBLOCKINGQUEUE_H_
 
