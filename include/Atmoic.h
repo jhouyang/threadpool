@@ -8,16 +8,16 @@
 // TODO : support copy constructor and operator =
 // TODO : other operations
 
-// support unsigned int only
-class AtomicUInt : boost::noncopyable
+// support int only
+class AtomicInt : boost::noncopyable
 {
 public:
-    explicit AtomicUInt(unsigned int val)
+    explicit AtomicInt(int val)
         : m_val(val)
     {
     }
     
-    unsigned int get() const
+    int get() const
     {
         {
             MutexLockGuard lock(m_lock);
@@ -25,7 +25,7 @@ public:
         }
     }
     
-    unsigned int getAndIncre() const
+    int getAndIncre() const
     {
         {
             MutexLockGuard lock(m_lock);
@@ -33,7 +33,7 @@ public:
         }
     }
     
-    unsigned int getAndDecre() const
+    int getAndDecre() const
     {
         {
             MutexLockGuard lock(m_lock);
@@ -41,7 +41,7 @@ public:
         }
     }
     
-    bool equal(unsigned int val) const
+    bool equal(int val) const
     {
         {
             MutexLockGuard lock(m_lock);
@@ -51,7 +51,7 @@ public:
     
 private:
     mutable MutexLock m_lock;
-    unsigned int m_val;
+    int m_val;
 };
 
 #endif  // ATOMIC_H_
