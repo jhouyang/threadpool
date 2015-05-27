@@ -1,6 +1,7 @@
 #ifndef LINKEDBLOCKINGQUEUE_H_
 #define LINKEDBLOCKINGQUEUE_H_
 
+#include <error>
 #include <list>
 #include <boost/typeof/typeof.hpp>
 
@@ -59,7 +60,7 @@ public:
         {
             MutexLockGuard popLock(m_popLock);
             while (m_count.get() == 0) {
-                if (m_emptyCond.timedWait(time) < 0 ) {
+                if (m_emptyCond.timedWait(time) != 0) { // EINVAL/ETIMEOUT
                     return false;
                 }
             }
