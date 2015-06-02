@@ -231,6 +231,8 @@ private:
 
     AtomicInt m_count;
     
+    // it's really not good to use std::list, cause I have to use a null head to handle conflict between
+    // popLock and putLock;
     std::list<ElementType> m_list;
 
     const int m_capacity;
